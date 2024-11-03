@@ -25,7 +25,10 @@ load_dotenv()
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', False)
 
-ALLOWED_HOSTS = ['webserver']
+ALLOWED_HOSTS = [
+    'webserver',
+    'task-manager-eqwt.onrender.com'
+]
 
 
 # Application definition
