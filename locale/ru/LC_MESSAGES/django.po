@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-06 17:38+0000\n"
+"POT-Creation-Date: 2024-11-28 20:32+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,15 +25,18 @@ msgid "Task Manager"
 msgstr "Менеджер задач"
 
 #: task_manager/templates/base.html:23
+#: task_manager/templates/user/index.html:17
 msgid "Users"
 msgstr "Пользователи"
 
-#: task_manager/templates/base.html:24
+#: task_manager/templates/base.html:24 task_manager/templates/login.html:6
+#: task_manager/templates/login.html:11
 msgid "Log in"
 msgstr "Вход"
 
 #: task_manager/templates/base.html:25
-msgid "Register"
+#: task_manager/templates/user/create.html:6
+msgid "Registration"
 msgstr "Регистрация"
 
 #: task_manager/templates/index.html:7
@@ -47,3 +50,86 @@ msgstr "Практические курсы по программировани�
 #: task_manager/templates/index.html:9
 msgid "Learn more"
 msgstr "Узнать больше"
+
+#: task_manager/templates/user/create.html:11
+msgid "Register"
+msgstr "Зарегистрировать"
+
+#: task_manager/templates/user/delete.html:5
+msgid "Delete user"
+msgstr "Удаление пользователя"
+
+#: task_manager/templates/user/delete.html:7
+msgid "Are you sure you want to delete "
+msgstr "Вы уверены, что хотите удалить "
+
+#: task_manager/templates/user/delete.html:10
+#: task_manager/templates/user/index.html:37
+msgid "Delete"
+msgstr "Удалить"
+
+#: task_manager/templates/user/index.html:21
+msgid "Username"
+msgstr "Имя пользователя"
+
+#: task_manager/templates/user/index.html:22
+msgid "Full name"
+msgstr "Полное имя"
+
+#: task_manager/templates/user/index.html:23
+msgid "Created at"
+msgstr "Дата создания"
+
+#: task_manager/templates/user/index.html:35
+#: task_manager/templates/user/update.html:11
+msgid "Update"
+msgstr "Изменить"
+
+#: task_manager/templates/user/update.html:6
+msgid "Update user"
+msgstr "Изменение пользователя"
+
+#: task_manager/user/forms.py:9
+msgid "Password"
+msgstr "Пароль"
+
+#: task_manager/user/forms.py:11
+msgid "Your password must be at least 3 characters."
+msgstr "Ваш пароль должен содержать как минимум 3 символа."
+
+#: task_manager/user/forms.py:14
+msgid "Password Confirmation"
+msgstr "Подтверждение пароля"
+
+#: task_manager/user/forms.py:16
+msgid "Please enter password again for confirmation."
+msgstr "Для подтверждения введите, пожалуйста, пароль ещё раз."
+
+#: task_manager/user/forms.py:42 task_manager/user/forms.py:50
+msgid "A user with this username already exists."
+msgstr "Пользователь с таким именем уже существует"
+
+#: task_manager/user/models.py:9
+msgid "First Name"
+msgstr "Имя"
+
+#: task_manager/user/models.py:12
+msgid "Last Name"
+msgstr "Фамилия"
+
+#: task_manager/user/views.py:32
+msgid "User is registered successfully"
+msgstr "Пользователь успешно зарегистрирован"
+
+#: task_manager/user/views.py:46 task_manager/user/views.py:63
+#: task_manager/user/views.py:91 task_manager/user/views.py:107
+msgid "You don't have permission to edit this user."
+msgstr "У вас нет прав для изменения другого пользователя."
+
+#: task_manager/user/views.py:73
+msgid "User is updated successfully"
+msgstr "Пользователь успешно изменен"
+
+#: task_manager/user/views.py:116
+msgid "User is deleted successfully"
+msgstr "Пользователь успешно удален"

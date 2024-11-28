@@ -20,15 +20,19 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
-              <a class="nav-link" href="#">{% translate "Users" %}</a>
-              <a class="nav-link" href="#">{% translate "Log in" %}</a>
-              <a class="nav-link" href="#">{% translate "Register" %}</a>
+              <a class="nav-link" href="{% url 'user_index' %}">{% translate "Users" %}</a>
+              <a class="nav-link" href="{% url 'login' %}">{% translate "Log in" %}</a>
+              <a class="nav-link" href="{% url 'user_create' %}">{% translate "Registration" %}</a>
             </div>
           </div>
         </div>
       </nav>
 </header>
+{{ request.user.id }}
 <p></p>
-    {% block content %}{% endblock %}
+  <div class="container wrapper flex-grow-1">
+      {% block messages %}{% endblock %}
+      {% block content %}{% endblock %}
+  </div>
 </body>
 </html>

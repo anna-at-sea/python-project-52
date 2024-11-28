@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block content %}
+  <h1>{% translate "Log in" %}</h1>
+  <p></p>
+  <form action="{% url 'login' %}" method="post">
+      {% csrf_token %}
+      {{ form|crispy }}
+      <input class="btn btn-primary" type="submit" value="{% translate 'Log in' %}">
+  </form>
+{% endblock %}
