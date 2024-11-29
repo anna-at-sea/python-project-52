@@ -1,12 +1,25 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
+{% block messages %}
+{% if messages %}
+    {% for message in messages %}
+    <div class="container">
+      <div{% if message.tags %} class="alert alert-{{ message.tags }} alert-dismissible"{% endif %} role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    </div>
+    {% endfor %}
+{% endif %}
+{% endblock %}
+
 {% block content %}
 <main class="container">
-    <div class="bg-light p-5 rounded">
-      <h1>{% translate "Hello from Hexlet!" %}</h1>
-      <p class="lead">{% translate "Practical programming courses" %}</p>
-      <a class="btn btn-lg btn-primary" href="/docs/5.1/components/navbar/" role="button">{% translate "Learn more" %}</a>
-    </div>
-  </main>
+  <div class="bg-light p-5 rounded">
+    <h1>{% translate "Hello from Hexlet!" %}</h1>
+    <p class="lead">{% translate "Practical programming courses" %}</p>
+    <a class="btn btn-lg btn-primary" href="/docs/5.1/components/navbar/" role="button">{% translate "Learn more" %}</a>
+  </div>
+</main>
 {% endblock %}

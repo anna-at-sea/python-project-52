@@ -2,12 +2,27 @@
 {% load crispy_forms_tags %}
 {% load i18n %}
 
+{% block messages %}
+{% if messages %}
+    {% for message in messages %}
+    <div class="container">
+      <div{% if message.tags %} class="alert alert-{{ message.tags }} alert-dismissible"{% endif %} role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    </div>
+    {% endfor %}
+{% endif %}
+{% endblock %}
+
 {% block content %}
-  <h1>{% translate "Log in" %}</h1>
-  <p></p>
-  <form action="{% url 'login' %}" method="post">
-      {% csrf_token %}
-      {{ form|crispy }}
-      <input class="btn btn-primary" type="submit" value="{% translate 'Log in' %}">
-  </form>
+  <div class="container">
+    <h1>{% translate "Log in" %}</h1>
+    <p></p>
+    <form action="{% url 'login' %}" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input class="btn btn-primary" type="submit" value="{% translate 'Log in' %}">
+    </form>
+  </div>
 {% endblock %}

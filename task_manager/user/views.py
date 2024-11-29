@@ -37,6 +37,14 @@ class UserFormCreateView(View):
 
 class UserFormUpdateView(LoginRequiredMixin, View):
 
+    def handle_no_permission(self):
+        messages.add_message(
+            self.request,
+            messages.ERROR,
+            _("You are not logged in! Please log in.")
+        )
+        return redirect('login')
+
     def get(self, request, *args, **kwargs):
         user_id = kwargs.get('id')
         if int(user_id) != request.user.id:
@@ -81,6 +89,14 @@ class UserFormUpdateView(LoginRequiredMixin, View):
 
 
 class UserFormDeleteView(LoginRequiredMixin, View):
+
+    def handle_no_permission(self):
+        messages.add_message(
+            self.request,
+            messages.ERROR,
+            _("You are not logged in! Please log in.")
+        )
+        return redirect('login')
 
     def get(self, request, *args, **kwargs):
         user_id = kwargs.get('id')

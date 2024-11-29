@@ -21,14 +21,20 @@
           <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
               <a class="nav-link" href="{% url 'user_index' %}">{% translate "Users" %}</a>
+              {% if not request.user.is_authenticated %}
               <a class="nav-link" href="{% url 'login' %}">{% translate "Log in" %}</a>
               <a class="nav-link" href="{% url 'user_create' %}">{% translate "Registration" %}</a>
+              {% else %}
+              <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <input type="submit" class="nav-link" value="{% translate 'Log out' %}">
+              </form>
+              {% endif %}
             </div>
           </div>
         </div>
       </nav>
 </header>
-{{ request.user.id }}
 <p></p>
   <div class="container wrapper flex-grow-1">
       {% block messages %}{% endblock %}
