@@ -13,7 +13,7 @@ makemigrations:
 migrate:
 	poetry run python3 manage.py migrate
 
-repl:
+shell:
 	poetry run python3 manage.py shell
 
 PORT ?= 8000
@@ -25,3 +25,6 @@ makemessages:
 
 compilemessages:
 	poetry run python3 manage.py compilemessages
+
+test:
+	poetry run pytest

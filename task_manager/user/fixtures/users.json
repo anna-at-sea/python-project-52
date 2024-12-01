@@ -1,0 +1,20 @@
+[
+    {
+      "model": "user.user",
+      "pk": 1,
+      "fields": {
+        "username": "testuser",
+        "password": "pbkdf2_sha256$870000$AqZGEsq1AvlJLYG3cCDBFg$1ZDwUDfyOTzP1TNqvP/8xiPNbOVyl9dTHlGb/Y4JYAU="
+      }
+    },
+    {
+      "model": "user.user",
+      "pk": 2,
+      "fields": {
+        "username": "testuser_update",
+        "password": "pbkdf2_sha256$870000$AqZGEsq1AvlJLYG3cCDBFg$1ZDwUDfyOTzP1TNqvP/8xiPNbOVyl9dTHlGb/Y4JYAU=",
+        "first_name": "John",
+        "last_name": "Doe"
+      }
+    }
+  ]
