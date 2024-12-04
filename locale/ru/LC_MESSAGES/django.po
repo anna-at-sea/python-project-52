@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-29 19:32+0000\n"
+"POT-Creation-Date: 2024-12-04 20:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,6 +19,36 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
 "(n%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#: task_manager/status/forms.py:26 task_manager/status/forms.py:33
+msgid "Task status with this name already exists."
+msgstr "Статус с таким именем уже существует"
+
+#: task_manager/status/models.py:7 task_manager/templates/status/index.html:25
+msgid "Name"
+msgstr "Имя"
+
+#: task_manager/status/views.py:17 task_manager/status/views.py:34
+#: task_manager/status/views.py:61 task_manager/status/views.py:100
+#: task_manager/user/views.py:44 task_manager/user/views.py:97
+msgid "You are not logged in! Please log in."
+msgstr "Вы не авторизованы! Пожалуйста, выполните вход."
+
+#: task_manager/status/views.py:49
+msgid "Status is created successfully"
+msgstr "Статус успешно создан"
+
+#: task_manager/status/views.py:84
+msgid "Status is updated successfully"
+msgstr "Статус успешно изменен"
+
+#: task_manager/status/views.py:122
+msgid "Status is deleted successfully"
+msgstr "Статус успешно удален"
+
+#: task_manager/status/views.py:127
+msgid "Cannot delete status while it is being used"
+msgstr "Невозможно удалить статус, потому что он используется"
 
 #: task_manager/templates/base.html:8 task_manager/templates/base.html:17
 msgid "Task Manager"
@@ -39,7 +69,12 @@ msgstr "Вход"
 msgid "Registration"
 msgstr "Регистрация"
 
-#: task_manager/templates/base.html:30
+#: task_manager/templates/base.html:28
+#: task_manager/templates/status/index.html:20
+msgid "Statuses"
+msgstr "Статусы"
+
+#: task_manager/templates/base.html:31
 msgid "Log out"
 msgstr "Выход"
 
@@ -55,6 +90,50 @@ msgstr "Практические курсы по программировани�
 msgid "Learn more"
 msgstr "Узнать больше"
 
+#: task_manager/templates/status/create.html:6
+#: task_manager/templates/status/index.html:21
+msgid "Create status"
+msgstr "Создать статус"
+
+#: task_manager/templates/status/create.html:11
+msgid "Create"
+msgstr "Создать"
+
+#: task_manager/templates/status/delete.html:5
+msgid "Delete status"
+msgstr "Удаление статуса"
+
+#: task_manager/templates/status/delete.html:7
+#: task_manager/templates/user/delete.html:7
+msgid "Are you sure you want to delete "
+msgstr "Вы уверены, что хотите удалить "
+
+#: task_manager/templates/status/delete.html:10
+msgid "Yes, delete"
+msgstr "Да, удалить"
+
+#: task_manager/templates/status/index.html:26
+#: task_manager/templates/user/index.html:26
+msgid "Created at"
+msgstr "Дата создания"
+
+#: task_manager/templates/status/index.html:37
+#: task_manager/templates/status/update.html:11
+#: task_manager/templates/user/index.html:38
+#: task_manager/templates/user/update.html:11
+msgid "Update"
+msgstr "Изменить"
+
+#: task_manager/templates/status/index.html:39
+#: task_manager/templates/user/delete.html:10
+#: task_manager/templates/user/index.html:40
+msgid "Delete"
+msgstr "Удалить"
+
+#: task_manager/templates/status/update.html:6
+msgid "Update status"
+msgstr "Изменение статуса"
+
 #: task_manager/templates/user/create.html:11
 msgid "Register"
 msgstr "Зарегистрировать"
@@ -63,15 +142,6 @@ msgstr "Зарегистрировать"
 msgid "Delete user"
 msgstr "Удаление пользователя"
 
-#: task_manager/templates/user/delete.html:7
-msgid "Are you sure you want to delete "
-msgstr "Вы уверены, что хотите удалить "
-
-#: task_manager/templates/user/delete.html:10
-#: task_manager/templates/user/index.html:40
-msgid "Delete"
-msgstr "Удалить"
-
 #: task_manager/templates/user/index.html:24
 msgid "Username"
 msgstr "Имя пользователя"
@@ -79,15 +149,6 @@ msgstr "Имя пользователя"
 #: task_manager/templates/user/index.html:25
 msgid "Full name"
 msgstr "Полное имя"
-
-#: task_manager/templates/user/index.html:26
-msgid "Created at"
-msgstr "Дата создания"
-
-#: task_manager/templates/user/index.html:38
-#: task_manager/templates/user/update.html:11
-msgid "Update"
-msgstr "Изменить"
 
 #: task_manager/templates/user/update.html:6
 msgid "Update user"
@@ -124,10 +185,6 @@ msgstr "Фамилия"
 #: task_manager/user/views.py:32
 msgid "User is registered successfully"
 msgstr "Пользователь успешно зарегистрирован"
-
-#: task_manager/user/views.py:44 task_manager/user/views.py:97
-msgid "You are not logged in! Please log in."
-msgstr "Вы не авторизованы! Пожалуйста, выполните вход."
 
 #: task_manager/user/views.py:54 task_manager/user/views.py:71
 #: task_manager/user/views.py:107 task_manager/user/views.py:123

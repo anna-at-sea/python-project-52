@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block messages %}
+{% if messages %}
+    {% for message in messages %}
+    <div class="container">
+      <div{% if message.tags %} class="alert alert-{{ message.tags }} alert-dismissible"{% endif %} role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    </div>
+    {% endfor %}
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container wrapper flex-grow-1">
+    <table class="table table-striped">
+        <h1>{% translate "Statuses" %}</h1>
+        <a class="btn btn-primary" href="{% url 'status_create' %}">{% translate "Create status" %}</a>
+        <thead>
+            <tr>
+            <th scope="col">ID</th>
+            <th scope="col">{% translate "Name" %}</th>
+            <th scope="col">{% translate "Created at" %}</th>
+            <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for status in statuses %}
+        <tr>
+            <td>{{ status.id }}</th>
+            <td>{{ status.name }}</td>
+            <td>{{ status.created_at }}</td>
+            <td>
+                <a href="{% url 'status_update' id=status.id %}">{% translate "Update" %}</a>
+                <br>
+                <a href="{% url 'status_delete' id=status.id %}">{% translate "Delete" %}</a>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
