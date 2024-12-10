@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django_bootstrap5',
     'task_manager.user',
     'task_manager.status',
+    'task_manager.task',
     'crispy_forms',
     'crispy_bootstrap5',
 ]

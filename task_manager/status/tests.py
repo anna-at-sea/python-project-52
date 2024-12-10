@@ -1,12 +1,14 @@
 from django.test import TestCase
 from task_manager.status.models import Status
 from task_manager.user.models import User
+from task_manager.task.models import Task
 from django.urls import reverse
 from django.contrib.messages import get_messages
 from os.path import join
 
 
 USERS_FIXTURE_PATH = 'task_manager/user/fixtures/'
+TASKS_FIXTURE_PATH = 'task_manager/task/fixtures/'
 
 
 class TestStatusRead(TestCase):
@@ -87,7 +89,6 @@ class TestStatusCreate(TestCase):
         response = self.client.post(
             reverse('status_create'), self.duplicate_status_data
         )
-        print(response)
         form = response.context['form']
         self.assertFormError(
             form, 'name', 'Task status with this name already exists.'
@@ -152,11 +153,17 @@ class TestStatusUpdate(TestCase):
 
 
 class TestStatusDelete(TestCase):
-    fixtures = [join(USERS_FIXTURE_PATH, "users.json"), "statuses.json"]
+    fixtures = [
+        join(USERS_FIXTURE_PATH, "users.json"),
+        join(TASKS_FIXTURE_PATH, "tasks.json"),
+        "statuses.json"
+    ]
 
     def setUp(self):
         self.user = User.objects.get(id=1)
         self.status = Status.objects.get(id=1)
+        self.status_in_use = Status.objects.get(id=2)
+        self.task = Task.objects.get(id=1)
 
     def test_delete_status_success(self):
         self.client.login(
@@ -176,4 +183,20 @@ class TestStatusDelete(TestCase):
         self.assertEqual(
             str(messages[0]),
             "You are not logged in! Please log in."
+        )
+
+    def test_delete_status_in_use(self):
+        self.client.login(
+            username=self.user.username,
+            password="correct_password"
+        )
+        response = self.client.post(reverse('status_delete', kwargs={'id': 2}))
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('status_index'))
+        self.assertTrue(Status.objects.filter(id=2).exists())
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(messages)
+        self.assertEqual(
+            str(messages[0]),
+            "Cannot delete status while it is being used"
         )

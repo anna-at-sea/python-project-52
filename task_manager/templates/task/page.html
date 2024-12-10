@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+    <h1>{% translate "View task" %}</h1>
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            <h2>{{ task.name }}</h2>
+        </div>
+        <div class="card-body bg-light">
+            <p>
+                {% if task.description %}
+                {{ task.description }}
+                {% endif %}
+            </p>
+            <hr>
+            <div class="container">
+                <div class="row">
+                  <div class="col">{% translate "Creator" %}</div>
+                  <div class="col">
+                    {{ task.creator.first_name }} {{ task.creator.last_name }}
+                </div>
+                </div>
+                <div class="row">
+                    <div class="col">{% translate "Executor" %}</div>
+                    <div class="col">
+                        {% if task.executor %}
+                        {{ task.executor.first_name }} {{ task.executor.last_name }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">{% translate "Status" %}</div>
+                    <div class="col">{{ task.status }}</div>
+                </div>
+                <div class="row">
+                    <div class="col">{% translate "Created at" %}</div>
+                    <div class="col">{{ task.created_at }}</div>
+                </div>
+                <!-- add labels !!! -->
+                <div class="row mt-3">
+                    <div class="col">
+                        <a href="{% url 'task_update' id=task.id %}">{% translate "Update" %}</a>
+                        <br>
+                        <a href="{% url 'task_delete' id=task.id %}">{% translate "Delete" %}</a>
+                    </div>
+                    <div class="col"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

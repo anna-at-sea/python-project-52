@@ -5,5 +5,12 @@
       "fields": {
         "name": "teststatus"
       }
+    },
+    {
+      "model": "status.status",
+      "pk": 2,
+      "fields": {
+        "name": "status_in_use"
+      }
     }
   ]
