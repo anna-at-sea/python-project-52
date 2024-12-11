@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+    <h1>{% translate "Delete label" %}</h1>
+    <p></p>
+    <p>{% translate "Are you sure you want to delete " %}{{ label.name }}?</p>
+    <form action="{% url 'label_delete' id=label.id %}" method="post">
+        {% csrf_token %}
+        <input type="submit" class="btn btn-danger" value="{% translate 'Yes, delete' %}">
+    </form>
+{% endblock %}

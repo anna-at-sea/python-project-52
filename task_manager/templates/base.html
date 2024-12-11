@@ -26,6 +26,7 @@
               <a class="nav-link" href="{% url 'user_create' %}">{% translate "Registration" %}</a>
               {% else %}
               <a class="nav-link" href="{% url 'status_index' %}">{% translate "Statuses" %}</a>
+              <a class="nav-link" href="{% url 'label_index' %}">{% translate "Labels" %}</a>
               <a class="nav-link" href="{% url 'task_index' %}">{% translate "Tasks" %}</a>
               <form action="{% url 'logout' %}" method="post">
                 {% csrf_token %}

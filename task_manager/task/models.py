@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 from task_manager.status.models import Status
 from task_manager.user.models import User
-# from task_manager.label.models import Label
+from task_manager.label.models import Label
 
 
 class Task(models.Model):
@@ -18,7 +18,7 @@ class Task(models.Model):
         blank=True, null=True, on_delete=models.PROTECT
     )
     created_at = models.DateTimeField(default=timezone.now)
-    # labels = models.ManyToManyField(Label, blank=True)
+    labels = models.ManyToManyField(Label, blank=True)
 
     def __str__(self):
         return self.name

@@ -10,17 +10,17 @@ from os.path import join
 
 USERS_FIXTURE_PATH = 'task_manager/user/fixtures/'
 TASKS_FIXTURE_PATH = 'task_manager/task/fixtures/'
-LABELS_FIXTURE_PATH = 'task_manager/label/fixtures/'
+STATUSES_FIXTURE_PATH = 'task_manager/status/fixtures/'
 
 
-class TestStatusRead(TestCase):
+class TestLabelRead(TestCase):
     fixtures = [join(USERS_FIXTURE_PATH, "users.json")]
 
     def setUp(self):
         self.user = User.objects.get(id=1)
 
-    def test_read_status_unauthorized(self):
-        response = self.client.get(reverse('status_index'))
+    def test_read_label_unauthorized(self):
+        response = self.client.get(reverse('label_index'))
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('login'))
         messages = list(get_messages(response.wsgi_request))
@@ -30,76 +30,76 @@ class TestStatusRead(TestCase):
             "You are not logged in! Please log in."
         )
 
-    def test_read_status_authorized(self):
+    def test_read_label_authorized(self):
         self.client.login(
             username=self.user.username,
             password="correct_password"
         )
-        response = self.client.get(reverse('status_index'))
+        response = self.client.get(reverse('label_index'))
         self.assertEqual(response.status_code, 200)
 
 
-class TestStatusCreate(TestCase):
-    fixtures = [join(USERS_FIXTURE_PATH, "users.json"), "statuses.json"]
+class TestLabelCreate(TestCase):
+    fixtures = [join(USERS_FIXTURE_PATH, "users.json"), "labels.json"]
 
     def setUp(self):
-        self.complete_status_data = {
-            'name': 'complete_status'
+        self.complete_label_data = {
+            'name': 'complete_label'
         }
-        self.missing_field_status_data = {
+        self.missing_field_label_data = {
             'name': ''
         }
-        self.status = Status.objects.get(id=1)
+        self.label = Label.objects.get(id=1)
         self.user = User.objects.get(id=1)
-        self.duplicate_status_data = {
-            'name': 'teststatus'
+        self.duplicate_label_data = {
+            'name': 'testlabel'
         }
 
-    def test_create_status_success(self):
+    def test_create_label_success(self):
         self.client.login(
             username=self.user.username,
             password="correct_password"
         )
         response = self.client.post(
-            reverse('status_create'), self.complete_status_data
+            reverse('label_create'), self.complete_label_data
         )
         self.assertEqual(response.status_code, 302)
-        status = Status.objects.get(name='complete_status')
-        self.assertIsNotNone(status)
-        self.assertTrue(Status.objects.filter(name="complete_status").exists())
+        label = Label.objects.get(name='complete_label')
+        self.assertIsNotNone(label)
+        self.assertTrue(Label.objects.filter(name="complete_label").exists())
 
-    def test_create_status_missing_field(self):
+    def test_create_label_missing_field(self):
         self.client.login(
             username=self.user.username,
             password="correct_password"
         )
         response = self.client.post(
-            reverse('status_create'), self.missing_field_status_data
+            reverse('label_create'), self.missing_field_label_data
         )
         form = response.context['form']
         self.assertFormError(form, 'name', 'This field is required.')
         self.assertEqual(response.status_code, 200)
         self.assertFalse(
-            Status.objects.filter(name="").exists()
+            Label.objects.filter(name="").exists()
         )
 
-    def test_create_duplicate_status(self):
+    def test_create_duplicate_label(self):
         self.client.login(
             username=self.user.username,
             password="correct_password"
         )
         response = self.client.post(
-            reverse('status_create'), self.duplicate_status_data
+            reverse('label_create'), self.duplicate_label_data
         )
         form = response.context['form']
         self.assertFormError(
-            form, 'name', 'Task status with this name already exists.'
+            form, 'name', 'Label with this name already exists.'
         )
         self.assertEqual(response.status_code, 200)
 
-    def test_create_status_unauthorized(self):
+    def test_create_label_unauthorized(self):
         response = self.client.post(
-            reverse('status_create'), self.complete_status_data
+            reverse('label_create'), self.complete_label_data
         )
         self.assertRedirects(response, reverse('login'))
         messages = list(get_messages(response.wsgi_request))
@@ -110,41 +110,41 @@ class TestStatusCreate(TestCase):
         )
 
 
-class TestStatusUpdate(TestCase):
-    fixtures = [join(USERS_FIXTURE_PATH, "users.json"), "statuses.json"]
+class TestLabelUpdate(TestCase):
+    fixtures = [join(USERS_FIXTURE_PATH, "users.json"), "labels.json"]
 
     def setUp(self):
-        self.status = Status.objects.get(id=1)
+        self.label = Label.objects.get(id=1)
         self.user = User.objects.get(id=1)
 
-    def test_update_status_success(self):
+    def test_update_label_success(self):
         self.client.login(
             username=self.user.username,
             password="correct_password"
         )
         response = self.client.post(
-            reverse('status_update', kwargs={'id': 1}),
-            {'name': 'new_status'}
+            reverse('label_update', kwargs={'id': 1}),
+            {'name': 'new_label'}
         )
         self.assertEqual(response.status_code, 302)
-        self.status.refresh_from_db()
-        self.assertEqual(self.status.name, 'new_status')
+        self.label.refresh_from_db()
+        self.assertEqual(self.label.name, 'new_label')
 
-    def test_update_status_missing_field(self):
+    def test_update_label_missing_field(self):
         self.client.login(
             username=self.user.username,
             password="correct_password"
         )
         response = self.client.post(
-            reverse('status_update', kwargs={'id': 1}),
+            reverse('label_update', kwargs={'id': 1}),
             {'name': ''}
         )
         form = response.context['form']
         self.assertFormError(form, 'name', 'This field is required.')
         self.assertEqual(response.status_code, 200)
 
-    def test_update_status_unauthorized(self):
-        response = self.client.get(reverse('status_update', kwargs={'id': 1}))
+    def test_update_label_unauthorized(self):
+        response = self.client.get(reverse('label_update', kwargs={'id': 1}))
         self.assertRedirects(response, reverse('login'))
         messages = list(get_messages(response.wsgi_request))
         self.assertTrue(messages)
@@ -154,29 +154,34 @@ class TestStatusUpdate(TestCase):
         )
 
 
-class TestStatusDelete(TestCase):
+class TestLebelDelete(TestCase):
     fixtures = [
         join(USERS_FIXTURE_PATH, "users.json"),
         join(TASKS_FIXTURE_PATH, "tasks.json"),
-        join(LABELS_FIXTURE_PATH, "labels.json"),
-        "statuses.json"
+        join(STATUSES_FIXTURE_PATH, "statuses.json"),
+        "labels.json"
     ]
 
     def setUp(self):
         self.user = User.objects.get(id=1)
+        self.status = Status.objects.get(id=1)
+        self.label = Label.objects.get(id=1)
+        self.label_in_use = Label.objects.get(id=2)
+        self.other_label_in_use = Label.objects.get(id=3)
+        self.task = Task.objects.get(id=1)
 
-    def test_delete_status_success(self):
+    def test_delete_label_success(self):
         self.client.login(
             username=self.user.username,
             password="correct_password"
         )
-        response = self.client.post(reverse('status_delete', kwargs={'id': 1}))
+        response = self.client.post(reverse('label_delete', kwargs={'id': 1}))
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('status_index'))
-        self.assertFalse(Status.objects.filter(id=1).exists())
+        self.assertRedirects(response, reverse('label_index'))
+        self.assertFalse(Label.objects.filter(id=1).exists())
 
-    def test_delete_status_unauthorized(self):
-        response = self.client.post(reverse('status_delete', kwargs={'id': 1}))
+    def test_delete_label_unauthorized(self):
+        response = self.client.post(reverse('label_delete', kwargs={'id': 1}))
         self.assertRedirects(response, reverse('login'))
         messages = list(get_messages(response.wsgi_request))
         self.assertTrue(messages)
@@ -185,18 +190,18 @@ class TestStatusDelete(TestCase):
             "You are not logged in! Please log in."
         )
 
-    def test_delete_status_in_use(self):
+    def test_delete_label_in_use(self):
         self.client.login(
             username=self.user.username,
             password="correct_password"
         )
-        response = self.client.post(reverse('status_delete', kwargs={'id': 2}))
+        response = self.client.post(reverse('label_delete', kwargs={'id': 2}))
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('status_index'))
-        self.assertTrue(Status.objects.filter(id=2).exists())
+        self.assertRedirects(response, reverse('label_index'))
+        self.assertTrue(Label.objects.filter(id=2).exists())
         messages = list(get_messages(response.wsgi_request))
         self.assertTrue(messages)
         self.assertEqual(
             str(messages[0]),
-            "Cannot delete status while it is being used"
+            "Cannot delete label while it is being used"
         )

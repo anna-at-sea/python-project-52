@@ -37,7 +37,19 @@
                     <div class="col">{% translate "Created at" %}</div>
                     <div class="col">{{ task.created_at }}</div>
                 </div>
-                <!-- add labels !!! -->
+                <div class="row">
+                    <div class="col">
+                        <h6>{% translate "Labels" %}:</h6>
+                        <ul>
+                            {% if task.labels.all %}
+                                {% for label in task.labels.all %}
+                                <li>{{ label.name }}</li>
+                                {% endfor %}
+                            {% endif %}
+                        </ul>
+                    </div>
+                    <div class="col"></div>
+                </div>
                 <div class="row mt-3">
                     <div class="col">
                         <a href="{% url 'task_update' id=task.id %}">{% translate "Update" %}</a>

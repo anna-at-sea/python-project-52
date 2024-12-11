@@ -3,6 +3,7 @@ from django.views import View
 from task_manager.task.models import Task
 from task_manager.user.models import User
 from task_manager.status.models import Status
+from task_manager.label.models import Label
 from task_manager.task.forms import TaskForm
 from django.contrib import messages
 from django.utils.translation import gettext as _
@@ -21,11 +22,12 @@ class TaskIndexView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         statuses = Status.objects.all()
+        labels = Label.objects.all()
         users = User.objects.all()
         status_filter = request.GET.get('status')
         executor_filter = request.GET.get('executor')
         choice_filter = request.GET.get('choice')
-        # add labels !!!
+        label_filter = request.GET.getlist('label')
         tasks = Task.objects.all()
         if status_filter:
             tasks = tasks.filter(status_id=status_filter)
@@ -33,10 +35,13 @@ class TaskIndexView(LoginRequiredMixin, View):
             tasks = tasks.filter(executor_id=executor_filter)
         if choice_filter:
             tasks = tasks.filter(creator_id=request.user.id)
+        if label_filter:
+            tasks = tasks.filter(labels__id__in=label_filter).distinct()
         return render(request, 'task/index.html', context={
             'tasks': tasks, 'statuses': statuses, 'users': users,
+            'labels': labels,
             'status_filter': status_filter, 'executor_filter': executor_filter,
-            'choice_filter': choice_filter
+            'choice_filter': choice_filter, 'label_filter': label_filter
         })
 
 
@@ -77,6 +82,9 @@ class TaskFormCreateView(LoginRequiredMixin, View):
         if form.is_valid():
             task = form.save(commit=False)
             task.creator = request.user
+            task.save()
+            labels = form.cleaned_data['labels']
+            task.labels.set(labels)
             task.save()
             messages.add_message(
                 request,

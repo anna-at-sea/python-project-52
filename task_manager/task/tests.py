@@ -2,6 +2,7 @@ from django.test import TestCase
 from task_manager.status.models import Status
 from task_manager.user.models import User
 from task_manager.task.models import Task
+from task_manager.label.models import Label
 from django.urls import reverse
 from django.contrib.messages import get_messages
 from os.path import join
@@ -9,13 +10,14 @@ from os.path import join
 
 USERS_FIXTURE_PATH = 'task_manager/user/fixtures/'
 STATUSES_FIXTURE_PATH = 'task_manager/status/fixtures/'
-# LABELS_FIXTURE_PATH = 'task_manager/label/fixtures/'
+LABELS_FIXTURE_PATH = 'task_manager/label/fixtures/'
 
 
 class TestTaskRead(TestCase):
     fixtures = [
         join(USERS_FIXTURE_PATH, "users.json"),
         join(STATUSES_FIXTURE_PATH, "statuses.json"),
+        join(LABELS_FIXTURE_PATH, "labels.json"),
         "tasks.json"
     ]
 
@@ -59,6 +61,7 @@ class TestTaskCreate(TestCase):
     fixtures = [
         join(USERS_FIXTURE_PATH, "users.json"),
         join(STATUSES_FIXTURE_PATH, "statuses.json"),
+        join(LABELS_FIXTURE_PATH, "labels.json"),
         "tasks.json"
     ]
 
@@ -66,6 +69,8 @@ class TestTaskCreate(TestCase):
         self.status = Status.objects.get(id=1)
         self.user = User.objects.get(id=1)
         self.task = Task.objects.get(id=1)
+        self.label1 = Label.objects.get(id=1)
+        self.label2 = Label.objects.get(id=2)
         self.complete_task_data = {
             'name': 'complete_task',
             'creator': self.user.id,
@@ -76,8 +81,9 @@ class TestTaskCreate(TestCase):
             'description': 'this is task description',
             'creator': self.user.id,
             'status': self.status.id,
-            'executor': self.user.id
-        }  # add labels!!!
+            'executor': self.user.id,
+            'labels': [self.label1.id, self.label2.id]
+        }
         self.missing_field_task_data = {
             'name': 'missing_field_task',
             'creator': self.user.id
@@ -100,6 +106,7 @@ class TestTaskCreate(TestCase):
         task = Task.objects.get(name='complete_task')
         self.assertIsNotNone(task)
         self.assertTrue(Task.objects.filter(name="complete_task").exists())
+        self.assertEqual(task.creator, self.user)
 
     def test_create_full_task_success(self):
         self.client.login(
@@ -113,6 +120,10 @@ class TestTaskCreate(TestCase):
         task = Task.objects.get(name='full_task')
         self.assertIsNotNone(task)
         self.assertTrue(Task.objects.filter(name="full_task").exists())
+        labels = task.labels.all()
+        self.assertIn(self.label1, labels)
+        self.assertIn(self.label2, labels)
+        self.assertEqual(labels.count(), 2)
 
     def test_create_task_missing_field(self):
         self.client.login(
@@ -160,6 +171,7 @@ class TestTaskUpdate(TestCase):
     fixtures = [
         join(USERS_FIXTURE_PATH, "users.json"),
         join(STATUSES_FIXTURE_PATH, "statuses.json"),
+        join(LABELS_FIXTURE_PATH, "labels.json"),
         "tasks.json"
     ]
 
@@ -215,6 +227,7 @@ class TestTaskDelete(TestCase):
     fixtures = [
         join(USERS_FIXTURE_PATH, "users.json"),
         join(STATUSES_FIXTURE_PATH, "statuses.json"),
+        join(LABELS_FIXTURE_PATH, "labels.json"),
         "tasks.json"
     ]
 

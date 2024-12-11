@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'task_manager.user',
     'task_manager.status',
     'task_manager.task',
+    'task_manager.label',
     'crispy_forms',
     'crispy_bootstrap5',
 ]

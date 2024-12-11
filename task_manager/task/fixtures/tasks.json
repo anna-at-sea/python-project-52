@@ -5,7 +5,8 @@
       "fields": {
         "name": "testtask",
         "creator": 1,
-        "status": 2
+        "status": 2,
+        "labels": [2, 3]
       }
     }
   ]

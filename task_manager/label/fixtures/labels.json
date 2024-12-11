@@ -1,0 +1,23 @@
+[
+    {
+      "model": "label.label",
+      "pk": 1,
+      "fields": {
+        "name": "testlabel"
+      }
+    },
+    {
+      "model": "label.label",
+      "pk": 2,
+      "fields": {
+        "name": "label_in_use"
+      }
+    },
+    {
+        "model": "label.label",
+        "pk": 3,
+        "fields": {
+          "name": "other_label_in_use"
+        }
+      }
+  ]

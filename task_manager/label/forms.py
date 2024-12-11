@@ -1,20 +1,14 @@
 from django.forms import ModelForm
 from django.utils.translation import gettext_lazy as _
-from .models import Task
+from .models import Label
 from django.contrib.auth.forms import ValidationError
 
 
-class TaskForm(ModelForm):
+class LabelForm(ModelForm):
 
     class Meta:
-        model = Task
-        fields = [
-            'name',
-            'description',
-            'status',
-            'executor',
-            'labels'
-        ]
+        model = Label
+        fields = ['name']
 
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.get('instance', None)
@@ -29,13 +23,13 @@ class TaskForm(ModelForm):
                 name=name
             ).exclude(pk=self.instance.pk).exists():
                 raise ValidationError(
-                    _("Task with this name already exists.")
+                    _("Label with this name already exists.")
                 )
         else:
             if self._meta.model.objects.filter(
                 name=name
             ).exists():
                 raise ValidationError(
-                    _("Task with this name already exists.")
+                    _("Label with this name already exists.")
                 )
         return name
