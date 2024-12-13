@@ -5,6 +5,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib import messages
 from django.utils.translation import gettext as _
+from django.http import HttpResponse
 
 
 class IndexView(TemplateView):
@@ -46,3 +47,9 @@ class LogoutView(View):
             _("You are logged out")
         )
         return redirect('index')
+
+
+def index(request):
+    a = None
+    a.hello()
+    return HttpResponse("Hello, world. You're at the pollapp index.")
