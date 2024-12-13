@@ -12,5 +12,12 @@
       "fields": {
         "name": "status_in_use"
       }
+    },
+    {
+      "model": "status.status",
+      "pk": 3,
+      "fields": {
+        "name": "status_in_use_2"
+      }
     }
   ]

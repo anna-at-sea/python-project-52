@@ -8,5 +8,16 @@
         "status": 2,
         "labels": [2, 3]
       }
+    },
+    {
+      "model": "task.task",
+      "pk": 2,
+      "fields": {
+        "name": "task1",
+        "creator": 2,
+        "executor": 2,
+        "status": 3,
+        "labels": [2]
+      }
     }
   ]

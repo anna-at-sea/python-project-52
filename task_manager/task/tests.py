@@ -1,7 +1,9 @@
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from task_manager.status.models import Status
 from task_manager.user.models import User
 from task_manager.task.models import Task
+from task_manager.task.filters import TaskFilter
+from task_manager.task.views import TaskIndexView
 from task_manager.label.models import Label
 from django.urls import reverse
 from django.contrib.messages import get_messages
@@ -269,3 +271,116 @@ class TestTaskDelete(TestCase):
             str(messages[0]),
             "You are not logged in! Please log in."
         )
+
+
+class TestTaskFilter(TestCase):
+    fixtures = [
+        join(USERS_FIXTURE_PATH, "users.json"),
+        join(STATUSES_FIXTURE_PATH, "statuses.json"),
+        join(LABELS_FIXTURE_PATH, "labels.json"),
+        "tasks.json"
+    ]
+
+    def setUp(self):
+        self.status1 = Status.objects.get(id=1)
+        self.status2 = Status.objects.get(id=2)
+        self.executor = User.objects.get(id=2)
+        self.label1 = Label.objects.get(id=1)
+        self.label2 = Label.objects.get(id=2)
+        self.label3 = Label.objects.get(id=3)
+        self.user = User.objects.get(id=1)
+        self.factory = RequestFactory()
+
+    def test_status_filter(self):
+        request = self.factory.get(
+            reverse('task_index'),
+            {'status': self.status2.id}
+        )
+        request.user = self.user
+        response = TaskIndexView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "task1")
+        self.assertContains(response, "testtask")
+        filtered_tasks = response.context_data['object_list']
+        self.assertEqual(len(filtered_tasks), 1)
+        request2 = self.factory.get(
+            reverse('task_index'),
+            {'status': self.status1.id}
+        )
+        request2.user = self.user
+        response = TaskIndexView.as_view()(request2)
+        self.assertEqual(response.status_code, 200)
+        filtered_tasks = response.context_data['object_list']
+        self.assertEqual(len(filtered_tasks), 0)
+
+    def test_executor_filter(self):
+        request = self.factory.get(
+            reverse('task_index'),
+            {'executor': self.executor.id}
+        )
+        request.user = self.user
+        response = TaskIndexView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "task1")
+        self.assertNotContains(response, "testtask")
+        filtered_tasks = response.context_data['object_list']
+        self.assertEqual(len(filtered_tasks), 1)
+        request2 = self.factory.get(
+            reverse('task_index'),
+            {'executor': self.user.id}
+        )
+        request2.user = self.user
+        response = TaskIndexView.as_view()(request2)
+        self.assertEqual(response.status_code, 200)
+        filtered_tasks = response.context_data['object_list']
+        self.assertEqual(len(filtered_tasks), 0)
+
+    def test_labels_filter(self):
+        request = self.factory.get(
+            reverse('task_index'),
+            {'labels': [self.label2.id]}
+        )
+        request.user = self.user
+        response = TaskIndexView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "task1")
+        self.assertContains(response, "testtask")
+        filtered_tasks = response.context_data['object_list']
+        self.assertEqual(len(filtered_tasks), 2)
+        request2 = self.factory.get(
+            reverse('task_index'),
+            {'labels': [self.label2.id, self.label3.id]}
+        )
+        request2.user = self.user
+        response = TaskIndexView.as_view()(request2)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "testtask")
+        self.assertContains(response, "task1")
+        request3 = self.factory.get(
+            reverse('task_index'), {'labels': [self.label1.id]}
+        )
+        request3.user = self.user
+        response = TaskIndexView.as_view()(request3)
+        self.assertEqual(response.status_code, 200)
+        filtered_tasks = response.context_data['object_list']
+        self.assertEqual(len(filtered_tasks), 0)
+
+    def test_created_by_me_filter(self):
+        request = self.factory.get(
+            reverse('task_index'), {'created_by_me': 'on'}
+        )
+        request.user = self.user
+        response = TaskIndexView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "testtask")
+        self.assertNotContains(response, "task1")
+        filtered_tasks = response.context_data['object_list']
+        self.assertEqual(len(filtered_tasks), 1)
+        request2 = self.factory.get(reverse('task_index'))
+        request2.user = self.user
+        response = TaskIndexView.as_view()(request2)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "testtask")
+        self.assertContains(response, "task1")
+        filtered_tasks = response.context_data['object_list']
+        self.assertEqual(len(filtered_tasks), 2)
