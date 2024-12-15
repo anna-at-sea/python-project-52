@@ -1,10 +1,14 @@
 from django.shortcuts import render, redirect
 from django.views import View
+from django.views.generic.edit import CreateView, DeleteView
+from django.views.generic import UpdateView
 from task_manager.user.models import User
 from task_manager.user.forms import UserForm
 from django.contrib import messages
 from django.utils.translation import gettext as _
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
+from django.core.exceptions import PermissionDenied
 
 
 class IndexView(View):
@@ -16,118 +20,74 @@ class IndexView(View):
         })
 
 
-class UserFormCreateView(View):
+class UserFormCreateView(CreateView):
+    model = User
+    form_class = UserForm
+    template_name = 'user/create.html'
+    success_url = reverse_lazy('login')
 
-    def get(self, request, *args, **kwargs):
-        form = UserForm()
-        return render(request, 'user/create.html', {'form': form})
-
-    def post(self, request, *args, **kwargs):
-        form = UserForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.add_message(
-                request,
-                messages.SUCCESS,
-                _("User is registered successfully")
-            )
-            return redirect('login')
-        return render(request, 'user/create.html', {'form': form})
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, _("User is registered successfully"))
+        return response
 
 
-class UserFormUpdateView(LoginRequiredMixin, View):
+class UserFormUpdateView(LoginRequiredMixin, UpdateView):
+    model = User
+    form_class = UserForm
+    template_name = 'user/update.html'
+    success_url = reverse_lazy('user_index')
+    context_object_name = 'form'
 
     def handle_no_permission(self):
-        messages.add_message(
-            self.request,
-            messages.ERROR,
-            _("You are not logged in! Please log in.")
-        )
+        messages.error(self.request, _("You are not logged in! Please log in."))
         return redirect('login')
 
-    def get(self, request, *args, **kwargs):
-        user_id = kwargs.get('id')
-        if int(user_id) != request.user.id:
-            messages.add_message(
-                request,
-                messages.ERROR,
-                _("You don't have permission to edit this user.")
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            return super().dispatch(request, *args, **kwargs)
+        except PermissionDenied:
+            messages.error(
+                request, _("You don't have permission to edit this user.")
             )
             return redirect('user_index')
-        user = User.objects.get(id=user_id)
-        form = UserForm(instance=user)
-        return render(
-            request,
-            'user/update.html',
-            {'form': form, 'user_id': user_id}
-        )
 
-    def post(self, request, *args, **kwargs):
-        user_id = kwargs.get('id')
-        if int(user_id) != request.user.id:
-            messages.add_message(
-                request,
-                messages.ERROR,
-                _("You don't have permission to edit this user.")
-            )
-            return redirect('user_index')
-        user = User.objects.get(id=user_id)
-        form = UserForm(request.POST, instance=user)
-        if form.is_valid():
-            form.save()
-            messages.add_message(
-                request,
-                messages.SUCCESS,
-                _("User is updated successfully")
-            )
-            return redirect('user_index')
-        return render(
-            request,
-            'user/update.html',
-            {'form': form, 'user_id': user_id}
-        )
+    def get_object(self, queryset=None):
+        user = super().get_object(queryset)
+        if user.id != self.request.user.id:
+            raise PermissionDenied
+        return user
+
+    def form_valid(self, form):
+        messages.success(self.request, _("User is updated successfully"))
+        return super().form_valid(form)
 
 
-class UserFormDeleteView(LoginRequiredMixin, View):
+class UserFormDeleteView(LoginRequiredMixin, DeleteView):
+    model = User
+    template_name = 'user/delete.html'
+    success_url = reverse_lazy('user_index')
+    context_object_name = 'user'
 
     def handle_no_permission(self):
-        messages.add_message(
-            self.request,
-            messages.ERROR,
-            _("You are not logged in! Please log in.")
-        )
+        messages.error(self.request, _("You are not logged in! Please log in."))
         return redirect('login')
 
-    def get(self, request, *args, **kwargs):
-        user_id = kwargs.get('id')
-        if int(user_id) != request.user.id:
-            messages.add_message(
-                request,
-                messages.ERROR,
-                _("You don't have permission to edit this user.")
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            return super().dispatch(request, *args, **kwargs)
+        except PermissionDenied:
+            messages.error(
+                request, _("You don't have permission to edit this user.")
             )
             return redirect('user_index')
-        user = User.objects.get(id=user_id)
-        return render(
-            request,
-            'user/delete.html',
-            {'user': user}
-        )
 
-    def post(self, request, *args, **kwargs):
-        user_id = kwargs.get('id')
-        if int(user_id) != request.user.id:
-            messages.add_message(
-                request,
-                messages.ERROR,
-                _("You don't have permission to edit this user.")
-            )
-            return redirect('user_index')
-        user = User.objects.get(id=user_id)
-        if user:
-            user.delete()
-            messages.add_message(
-                request,
-                messages.SUCCESS,
-                _("User is deleted successfully"))
-        return redirect('user_index')
+    def get_object(self, queryset=None):
+        user = super().get_object(queryset)
+        if user.id != self.request.user.id:
+            raise PermissionDenied
+        return user
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, _("User is deleted successfully"))
+        return super().delete(request, *args, **kwargs)

@@ -123,7 +123,7 @@ class TestLabelUpdate(TestCase):
             password="correct_password"
         )
         response = self.client.post(
-            reverse('label_update', kwargs={'id': 1}),
+            reverse('label_update', kwargs={'pk': 1}),
             {'name': 'new_label'}
         )
         self.assertEqual(response.status_code, 302)
@@ -136,7 +136,7 @@ class TestLabelUpdate(TestCase):
             password="correct_password"
         )
         response = self.client.post(
-            reverse('label_update', kwargs={'id': 1}),
+            reverse('label_update', kwargs={'pk': 1}),
             {'name': ''}
         )
         form = response.context['form']
@@ -144,7 +144,7 @@ class TestLabelUpdate(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_update_label_unauthorized(self):
-        response = self.client.get(reverse('label_update', kwargs={'id': 1}))
+        response = self.client.get(reverse('label_update', kwargs={'pk': 1}))
         self.assertRedirects(response, reverse('login'))
         messages = list(get_messages(response.wsgi_request))
         self.assertTrue(messages)
@@ -175,13 +175,13 @@ class TestLebelDelete(TestCase):
             username=self.user.username,
             password="correct_password"
         )
-        response = self.client.post(reverse('label_delete', kwargs={'id': 1}))
+        response = self.client.post(reverse('label_delete', kwargs={'pk': 1}))
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('label_index'))
         self.assertFalse(Label.objects.filter(id=1).exists())
 
     def test_delete_label_unauthorized(self):
-        response = self.client.post(reverse('label_delete', kwargs={'id': 1}))
+        response = self.client.post(reverse('label_delete', kwargs={'pk': 1}))
         self.assertRedirects(response, reverse('login'))
         messages = list(get_messages(response.wsgi_request))
         self.assertTrue(messages)
@@ -195,7 +195,7 @@ class TestLebelDelete(TestCase):
             username=self.user.username,
             password="correct_password"
         )
-        response = self.client.post(reverse('label_delete', kwargs={'id': 2}))
+        response = self.client.post(reverse('label_delete', kwargs={'pk': 2}))
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('label_index'))
         self.assertTrue(Label.objects.filter(id=2).exists())

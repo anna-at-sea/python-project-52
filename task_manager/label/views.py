@@ -1,21 +1,20 @@
 from django.shortcuts import render, redirect
 from django.views import View
+from django.views.generic.edit import CreateView, DeleteView
+from django.views.generic import UpdateView
 from task_manager.label.models import Label
 from django.core.exceptions import ValidationError
 from task_manager.label.forms import LabelForm
 from django.contrib import messages
 from django.utils.translation import gettext as _
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
 
 
 class LabelIndexView(LoginRequiredMixin, View):
 
     def handle_no_permission(self):
-        messages.add_message(
-            self.request,
-            messages.ERROR,
-            _("You are not logged in! Please log in.")
-        )
+        messages.error(self.request, _("You are not logged in! Please log in."))
         return redirect('login')
 
     def get(self, request, *args, **kwargs):
@@ -25,104 +24,57 @@ class LabelIndexView(LoginRequiredMixin, View):
         })
 
 
-class LabelFormCreateView(LoginRequiredMixin, View):
+class LabelFormCreateView(LoginRequiredMixin, CreateView):
+    model = Label
+    form_class = LabelForm
+    template_name = 'label/create.html'
+    success_url = reverse_lazy('label_index')
 
     def handle_no_permission(self):
-        messages.add_message(
-            self.request,
-            messages.ERROR,
-            _("You are not logged in! Please log in.")
-        )
+        messages.error(self.request, _("You are not logged in! Please log in."))
         return redirect('login')
 
-    def get(self, request, *args, **kwargs):
-        form = LabelForm()
-        return render(request, 'label/create.html', {'form': form})
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, _("Label is created successfully"))
+        return response
 
-    def post(self, request, *args, **kwargs):
-        form = LabelForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.add_message(
-                request,
-                messages.SUCCESS,
-                _("Label is created successfully")
+
+class LabelFormUpdateView(LoginRequiredMixin, UpdateView):
+    model = Label
+    form_class = LabelForm
+    template_name = 'label/update.html'
+    success_url = reverse_lazy('label_index')
+    context_object_name = 'label'
+
+    def handle_no_permission(self):
+        messages.error(self.request, _("You are not logged in! Please log in."))
+        return redirect('login')
+
+    def form_valid(self, form):
+        messages.success(self.request, _("Label is updated successfully"))
+        return super().form_valid(form)
+
+
+class LabelFormDeleteView(LoginRequiredMixin, DeleteView):
+    model = Label
+    template_name = 'label/delete.html'
+    success_url = reverse_lazy('label_index')
+    context_object_name = 'label'
+
+    def handle_no_permission(self):
+        messages.error(self.request, _("You are not logged in! Please log in."))
+        return redirect('login')
+
+    def delete(self, form, *args, **kwargs):
+        messages.success(self.request, _("Label is deleted successfully"))
+        return super().delete(self.request, *args, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            return super().dispatch(request, *args, **kwargs)
+        except ValidationError:
+            messages.error(
+                request, _("Cannot delete label while it is being used")
             )
             return redirect('label_index')
-        return render(request, 'label/create.html', {'form': form})
-
-
-class LabelFormUpdateView(LoginRequiredMixin, View):
-
-    def handle_no_permission(self):
-        messages.add_message(
-            self.request,
-            messages.ERROR,
-            _("You are not logged in! Please log in.")
-        )
-        return redirect('login')
-
-    def get(self, request, *args, **kwargs):
-        label_id = kwargs.get('id')
-        label = Label.objects.get(id=label_id)
-        form = LabelForm(instance=label)
-        return render(
-            request,
-            'label/update.html',
-            {'form': form, 'label_id': label_id}
-        )
-
-    def post(self, request, *args, **kwargs):
-        label_id = kwargs.get('id')
-        label = Label.objects.get(id=label_id)
-        form = LabelForm(request.POST, instance=label)
-        if form.is_valid():
-            form.save()
-            messages.add_message(
-                request,
-                messages.SUCCESS,
-                _("Label is updated successfully")
-            )
-            return redirect('label_index')
-        return render(
-            request,
-            'label/update.html',
-            {'form': form, 'label_id': label_id}
-        )
-
-
-class LabelFormDeleteView(LoginRequiredMixin, View):
-
-    def handle_no_permission(self):
-        messages.add_message(
-            self.request,
-            messages.ERROR,
-            _("You are not logged in! Please log in.")
-        )
-        return redirect('login')
-
-    def get(self, request, *args, **kwargs):
-        label_id = kwargs.get('id')
-        label = Label.objects.get(id=label_id)
-        return render(
-            request,
-            'label/delete.html',
-            {'label': label}
-        )
-
-    def post(self, request, *args, **kwargs):
-        label_id = kwargs.get('id')
-        label = Label.objects.get(id=label_id)
-        if label:
-            try:
-                label.delete()
-                messages.add_message(
-                    request,
-                    messages.SUCCESS,
-                    _("Label is deleted successfully"))
-            except ValidationError:
-                messages.add_message(
-                    request,
-                    messages.ERROR,
-                    _("Cannot delete label while it is being used"))
-        return redirect('label_index')

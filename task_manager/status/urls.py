@@ -9,12 +9,12 @@ urlpatterns = [
         name='status_create'
     ),
     path(
-        '<int:id>/update/',
+        '<int:pk>/update/',
         views.StatusFormUpdateView.as_view(),
         name='status_update'
     ),
     path(
-        '<int:id>/delete/',
+        '<int:pk>/delete/',
         views.StatusFormDeleteView.as_view(),
         name='status_delete'
     ),

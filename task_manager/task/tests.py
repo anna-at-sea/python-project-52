@@ -15,7 +15,7 @@ STATUSES_FIXTURE_PATH = 'task_manager/status/fixtures/'
 LABELS_FIXTURE_PATH = 'task_manager/label/fixtures/'
 
 
-class TestTaskRead(TestCase):
+class BaseTaskTestCase(TestCase):
     fixtures = [
         join(USERS_FIXTURE_PATH, "users.json"),
         join(STATUSES_FIXTURE_PATH, "statuses.json"),
@@ -23,51 +23,47 @@ class TestTaskRead(TestCase):
         "tasks.json"
     ]
 
+    def login_user(self, user):
+        self.client.login(
+            username=user.username,
+            password="correct_password"
+        )
+
+    def assertRedirectLogin(self, response):
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('login'))
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(messages)
+        self.assertEqual(
+            str(messages[0]),
+            "You are not logged in! Please log in."
+        )
+
+
+class TestTaskRead(BaseTaskTestCase):
     def setUp(self):
+        super().setUp()
         self.user = User.objects.get(id=1)
 
     def test_read_task_index_unauthorized(self):
         response = self.client.get(reverse('task_index'))
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('login'))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            "You are not logged in! Please log in."
-        )
+        self.assertRedirectLogin(response)
 
     def test_read_task_page_unauthorized(self):
-        response = self.client.get(reverse('task_page', kwargs={'id': 1}))
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('login'))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            "You are not logged in! Please log in."
-        )
+        response = self.client.get(reverse('task_page', kwargs={'pk': 1}))
+        self.assertRedirectLogin(response)
 
     def test_read_task_authorized(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
+        self.login_user(self.user)
         response = self.client.get(reverse('task_index'))
         self.assertEqual(response.status_code, 200)
-        response = self.client.get(reverse('task_page', kwargs={'id': 1}))
+        response = self.client.get(reverse('task_page', kwargs={'pk': 1}))
         self.assertEqual(response.status_code, 200)
 
 
-class TestTaskCreate(TestCase):
-    fixtures = [
-        join(USERS_FIXTURE_PATH, "users.json"),
-        join(STATUSES_FIXTURE_PATH, "statuses.json"),
-        join(LABELS_FIXTURE_PATH, "labels.json"),
-        "tasks.json"
-    ]
-
+class TestTaskCreate(BaseTaskTestCase):
     def setUp(self):
+        super().setUp()
         self.status = Status.objects.get(id=1)
         self.user = User.objects.get(id=1)
         self.task = Task.objects.get(id=1)
@@ -97,10 +93,7 @@ class TestTaskCreate(TestCase):
         }
 
     def test_create_task_success(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
+        self.login_user(self.user)
         response = self.client.post(
             reverse('task_create'), self.complete_task_data
         )
@@ -111,10 +104,7 @@ class TestTaskCreate(TestCase):
         self.assertEqual(task.creator, self.user)
 
     def test_create_full_task_success(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
+        self.login_user(self.user)
         response = self.client.post(
             reverse('task_create'), self.full_task_data
         )
@@ -128,10 +118,7 @@ class TestTaskCreate(TestCase):
         self.assertEqual(labels.count(), 2)
 
     def test_create_task_missing_field(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
+        self.login_user(self.user)
         response = self.client.post(
             reverse('task_create'), self.missing_field_task_data
         )
@@ -143,10 +130,7 @@ class TestTaskCreate(TestCase):
         )
 
     def test_create_duplicate_task(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
+        self.login_user(self.user)
         response = self.client.post(
             reverse('task_create'), self.duplicate_task_data
         )
@@ -160,24 +144,12 @@ class TestTaskCreate(TestCase):
         response = self.client.post(
             reverse('task_create'), self.complete_task_data
         )
-        self.assertRedirects(response, reverse('login'))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            "You are not logged in! Please log in."
-        )
+        self.assertRedirectLogin(response)
 
 
-class TestTaskUpdate(TestCase):
-    fixtures = [
-        join(USERS_FIXTURE_PATH, "users.json"),
-        join(STATUSES_FIXTURE_PATH, "statuses.json"),
-        join(LABELS_FIXTURE_PATH, "labels.json"),
-        "tasks.json"
-    ]
-
+class TestTaskUpdate(BaseTaskTestCase):
     def setUp(self):
+        super().setUp()
         self.task = Task.objects.get(id=1)
         self.user = User.objects.get(id=1)
         self.updated_task_data = {
@@ -188,12 +160,9 @@ class TestTaskUpdate(TestCase):
         }
 
     def test_update_task_success(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
+        self.login_user(self.user)
         response = self.client.post(
-            reverse('task_update', kwargs={'id': 1}),
+            reverse('task_update', kwargs={'pk': 1}),
             self.updated_task_data
         )
         self.assertEqual(response.status_code, 302)
@@ -202,12 +171,9 @@ class TestTaskUpdate(TestCase):
         self.assertEqual(self.task.description, 'new_description')
 
     def test_update_task_missing_field(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
+        self.login_user(self.user)
         response = self.client.post(
-            reverse('task_update', kwargs={'id': 1}),
+            reverse('task_update', kwargs={'pk': 1}),
             {'name': ''}
         )
         form = response.context['form']
@@ -215,45 +181,27 @@ class TestTaskUpdate(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_update_task_unauthorized(self):
-        response = self.client.get(reverse('task_update', kwargs={'id': 1}))
-        self.assertRedirects(response, reverse('login'))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            "You are not logged in! Please log in."
-        )
+        response = self.client.get(reverse('task_update', kwargs={'pk': 1}))
+        self.assertRedirectLogin(response)
 
 
-class TestTaskDelete(TestCase):
-    fixtures = [
-        join(USERS_FIXTURE_PATH, "users.json"),
-        join(STATUSES_FIXTURE_PATH, "statuses.json"),
-        join(LABELS_FIXTURE_PATH, "labels.json"),
-        "tasks.json"
-    ]
-
+class TestTaskDelete(BaseTaskTestCase):
     def setUp(self):
+        super().setUp()
         self.user = User.objects.get(id=1)
         self.other_user = User.objects.get(id=2)
         self.task = Task.objects.get(id=1)
 
     def test_delete_task_success(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
-        response = self.client.post(reverse('task_delete', kwargs={'id': 1}))
+        self.login_user(self.user)
+        response = self.client.post(reverse('task_delete', kwargs={'pk': 1}))
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('task_index'))
         self.assertFalse(Task.objects.filter(id=1).exists())
 
     def test_delete_task_of_other_user(self):
-        self.client.login(
-            username=self.other_user.username,
-            password="correct_password"
-        )
-        response = self.client.get(reverse('task_delete', kwargs={'id': 1}))
+        self.login_user(self.other_user)
+        response = self.client.get(reverse('task_delete', kwargs={'pk': 1}))
         self.assertRedirects(response, reverse('task_index'))
         messages = list(get_messages(response.wsgi_request))
         self.assertTrue(messages)
@@ -263,25 +211,13 @@ class TestTaskDelete(TestCase):
         )
 
     def test_delete_task_unauthorized(self):
-        response = self.client.post(reverse('task_delete', kwargs={'id': 1}))
-        self.assertRedirects(response, reverse('login'))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            "You are not logged in! Please log in."
-        )
+        response = self.client.post(reverse('task_delete', kwargs={'pk': 1}))
+        self.assertRedirectLogin(response)
 
 
-class TestTaskFilter(TestCase):
-    fixtures = [
-        join(USERS_FIXTURE_PATH, "users.json"),
-        join(STATUSES_FIXTURE_PATH, "statuses.json"),
-        join(LABELS_FIXTURE_PATH, "labels.json"),
-        "tasks.json"
-    ]
-
+class TestTaskFilter(BaseTaskTestCase):
     def setUp(self):
+        super().setUp()
         self.status1 = Status.objects.get(id=1)
         self.status2 = Status.objects.get(id=2)
         self.executor = User.objects.get(id=2)

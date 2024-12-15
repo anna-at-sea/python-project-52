@@ -1,21 +1,20 @@
 from django.shortcuts import render, redirect
 from django.views import View
+from django.views.generic.edit import CreateView, DeleteView
+from django.views.generic import UpdateView
 from task_manager.status.models import Status
 from django.db.models import ProtectedError
 from task_manager.status.forms import StatusForm
 from django.contrib import messages
 from django.utils.translation import gettext as _
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
 
 
 class StatusIndexView(LoginRequiredMixin, View):
 
     def handle_no_permission(self):
-        messages.add_message(
-            self.request,
-            messages.ERROR,
-            _("You are not logged in! Please log in.")
-        )
+        messages.error(self.request, _("You are not logged in! Please log in."))
         return redirect('login')
 
     def get(self, request, *args, **kwargs):
@@ -25,104 +24,57 @@ class StatusIndexView(LoginRequiredMixin, View):
         })
 
 
-class StatusFormCreateView(LoginRequiredMixin, View):
+class StatusFormCreateView(LoginRequiredMixin, CreateView):
+    model = Status
+    form_class = StatusForm
+    template_name = 'status/create.html'
+    success_url = reverse_lazy('status_index')
 
     def handle_no_permission(self):
-        messages.add_message(
-            self.request,
-            messages.ERROR,
-            _("You are not logged in! Please log in.")
-        )
+        messages.error(self.request, _("You are not logged in! Please log in."))
         return redirect('login')
 
-    def get(self, request, *args, **kwargs):
-        form = StatusForm()
-        return render(request, 'status/create.html', {'form': form})
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, _("Status is created successfully"))
+        return response
 
-    def post(self, request, *args, **kwargs):
-        form = StatusForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.add_message(
-                request,
-                messages.SUCCESS,
-                _("Status is created successfully")
+
+class StatusFormUpdateView(LoginRequiredMixin, UpdateView):
+    model = Status
+    form_class = StatusForm
+    template_name = 'status/update.html'
+    success_url = reverse_lazy('status_index')
+    context_object_name = 'status'
+
+    def handle_no_permission(self):
+        messages.error(self.request, _("You are not logged in! Please log in."))
+        return redirect('login')
+
+    def form_valid(self, form):
+        messages.success(self.request, _("Status is updated successfully"))
+        return super().form_valid(form)
+
+
+class StatusFormDeleteView(LoginRequiredMixin, DeleteView):
+    model = Status
+    template_name = 'status/delete.html'
+    success_url = reverse_lazy('status_index')
+    context_object_name = 'status'
+
+    def handle_no_permission(self):
+        messages.error(self.request, _("You are not logged in! Please log in."))
+        return redirect('login')
+
+    def delete(self, form, *args, **kwargs):
+        messages.success(self.request, _("Status is deleted successfully"))
+        return super().delete(self.request, *args, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            return super().dispatch(request, *args, **kwargs)
+        except ProtectedError:
+            messages.error(
+                request, _("Cannot delete status while it is being used")
             )
             return redirect('status_index')
-        return render(request, 'status/create.html', {'form': form})
-
-
-class StatusFormUpdateView(LoginRequiredMixin, View):
-
-    def handle_no_permission(self):
-        messages.add_message(
-            self.request,
-            messages.ERROR,
-            _("You are not logged in! Please log in.")
-        )
-        return redirect('login')
-
-    def get(self, request, *args, **kwargs):
-        status_id = kwargs.get('id')
-        status = Status.objects.get(id=status_id)
-        form = StatusForm(instance=status)
-        return render(
-            request,
-            'status/update.html',
-            {'form': form, 'status_id': status_id}
-        )
-
-    def post(self, request, *args, **kwargs):
-        status_id = kwargs.get('id')
-        status = Status.objects.get(id=status_id)
-        form = StatusForm(request.POST, instance=status)
-        if form.is_valid():
-            form.save()
-            messages.add_message(
-                request,
-                messages.SUCCESS,
-                _("Status is updated successfully")
-            )
-            return redirect('status_index')
-        return render(
-            request,
-            'status/update.html',
-            {'form': form, 'status_id': status_id}
-        )
-
-
-class StatusFormDeleteView(LoginRequiredMixin, View):
-
-    def handle_no_permission(self):
-        messages.add_message(
-            self.request,
-            messages.ERROR,
-            _("You are not logged in! Please log in.")
-        )
-        return redirect('login')
-
-    def get(self, request, *args, **kwargs):
-        status_id = kwargs.get('id')
-        status = Status.objects.get(id=status_id)
-        return render(
-            request,
-            'status/delete.html',
-            {'status': status}
-        )
-
-    def post(self, request, *args, **kwargs):
-        status_id = kwargs.get('id')
-        status = Status.objects.get(id=status_id)
-        if status:
-            try:
-                status.delete()
-                messages.add_message(
-                    request,
-                    messages.SUCCESS,
-                    _("Status is deleted successfully"))
-            except ProtectedError:
-                messages.add_message(
-                    request,
-                    messages.ERROR,
-                    _("Cannot delete status while it is being used"))
-        return redirect('status_index')

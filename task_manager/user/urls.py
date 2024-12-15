@@ -9,12 +9,12 @@ urlpatterns = [
         name='user_create'
     ),
     path(
-        '<int:id>/update/',
+        '<int:pk>/update/',
         views.UserFormUpdateView.as_view(),
         name='user_update'
     ),
     path(
-        '<int:id>/delete/',
+        '<int:pk>/delete/',
         views.UserFormDeleteView.as_view(),
         name='user_delete'
     ),

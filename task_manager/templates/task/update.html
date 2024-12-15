@@ -5,7 +5,7 @@
 {% block content %}
     <h1>{% translate "Update task" %}</h1>
     <p></p>
-    <form action="{% url 'task_update' id=task_id %}" method="post">
+    <form action="{% url 'task_update' pk=task.id %}" method="post">
         {% csrf_token %}
         {{ form|crispy }}
         <input class="btn btn-primary" type="submit" value="{% translate 'Update' %}">

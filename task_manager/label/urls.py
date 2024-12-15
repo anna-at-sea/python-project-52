@@ -9,12 +9,12 @@ urlpatterns = [
         name='label_create'
     ),
     path(
-        '<int:id>/update/',
+        '<int:pk>/update/',
         views.LabelFormUpdateView.as_view(),
         name='label_update'
     ),
     path(
-        '<int:id>/delete/',
+        '<int:pk>/delete/',
         views.LabelFormDeleteView.as_view(),
         name='label_delete'
     ),

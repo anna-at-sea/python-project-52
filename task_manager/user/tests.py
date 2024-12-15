@@ -31,7 +31,7 @@ class TestAuthentication(TestCase):
             password="correct_password"
         )
         self.client.logout()
-        response = self.client.get(reverse('user_update', kwargs={'id': 1}))
+        response = self.client.get(reverse('user_update', kwargs={'pk': 1}))
         self.assertRedirects(response, reverse('login'))
 
 
@@ -127,7 +127,7 @@ class TestUserUpdate(TestCase):
             password="correct_password"
         )
         response = self.client.post(
-            reverse('user_update', kwargs={'id': 2}),
+            reverse('user_update', kwargs={'pk': 2}),
             {
                 'username': 'new_username',
                 'password1': 'correct_password',
@@ -146,7 +146,7 @@ class TestUserUpdate(TestCase):
             password="correct_password"
         )
         response = self.client.post(
-            reverse('user_update', kwargs={'id': 2}),
+            reverse('user_update', kwargs={'pk': 2}),
             {
                 'username': 'new_username',
                 'password1': 'correct_password',
@@ -163,7 +163,7 @@ class TestUserUpdate(TestCase):
             username=self.user.username,
             password="correct_password"
         )
-        response = self.client.get(reverse('user_update', kwargs={'id': 1}))
+        response = self.client.get(reverse('user_update', kwargs={'pk': 1}))
         self.assertRedirects(response, reverse('user_index'))
         messages = list(get_messages(response.wsgi_request))
         self.assertTrue(messages)
@@ -173,7 +173,7 @@ class TestUserUpdate(TestCase):
         )
 
     def test_update_user_unauthorized(self):
-        response = self.client.get(reverse('user_update', kwargs={'id': 1}))
+        response = self.client.get(reverse('user_update', kwargs={'pk': 1}))
         self.assertRedirects(response, reverse('login'))
         messages = list(get_messages(response.wsgi_request))
         self.assertTrue(messages)
@@ -194,7 +194,7 @@ class TestUserDelete(TestCase):
             username=self.user.username,
             password="correct_password"
         )
-        response = self.client.post(reverse('user_delete', kwargs={'id': 1}))
+        response = self.client.post(reverse('user_delete', kwargs={'pk': 1}))
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('user_index'))
         self.assertFalse(User.objects.filter(id=1).exists())
@@ -204,7 +204,7 @@ class TestUserDelete(TestCase):
             username=self.user.username,
             password="correct_password"
         )
-        response = self.client.post(reverse('user_delete', kwargs={'id': 2}))
+        response = self.client.post(reverse('user_delete', kwargs={'pk': 2}))
         self.assertRedirects(response, reverse('user_index'))
         messages = list(get_messages(response.wsgi_request))
         self.assertTrue(messages)
@@ -215,7 +215,7 @@ class TestUserDelete(TestCase):
         self.assertTrue(User.objects.filter(id=2).exists())
 
     def test_delete_user_unauthorized(self):
-        response = self.client.post(reverse('user_delete', kwargs={'id': 1}))
+        response = self.client.post(reverse('user_delete', kwargs={'pk': 1}))
         self.assertRedirects(response, reverse('login'))
         messages = list(get_messages(response.wsgi_request))
         self.assertTrue(messages)

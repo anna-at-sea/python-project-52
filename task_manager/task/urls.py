@@ -9,18 +9,18 @@ urlpatterns = [
         name='task_create'
     ),
     path(
-        '<int:id>/update/',
+        '<int:pk>/',
+        views.TaskPageView.as_view(),
+        name='task_page'
+    ),
+    path(
+        '<int:pk>/update/',
         views.TaskFormUpdateView.as_view(),
         name='task_update'
     ),
     path(
-        '<int:id>/delete/',
+        '<int:pk>/delete/',
         views.TaskFormDeleteView.as_view(),
         name='task_delete'
-    ),
-    path(
-        '<int:id>/',
-        views.TaskPageView.as_view(),
-        name='task_page'
     ),
 ]
