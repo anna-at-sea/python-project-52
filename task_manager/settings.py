@@ -131,7 +131,7 @@ LOGIN_URL = '/login/'
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-ru'
 
 TIME_ZONE = 'UTC'
 
@@ -141,7 +141,7 @@ USE_TZ = True
 
 LANGUAGES = [
     ('en', 'English'),
-    ('ru', 'Russian'),
+    ('ru', 'Русский'),
 ]
 
 LOCALE_PATHS = [
