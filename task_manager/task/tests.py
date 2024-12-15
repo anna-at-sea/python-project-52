@@ -8,6 +8,7 @@ from task_manager.label.models import Label
 from django.urls import reverse
 from django.contrib.messages import get_messages
 from os.path import join
+from django.utils.translation import gettext as _
 
 
 USERS_FIXTURE_PATH = 'task_manager/user/fixtures/'
@@ -36,7 +37,7 @@ class BaseTaskTestCase(TestCase):
         self.assertTrue(messages)
         self.assertEqual(
             str(messages[0]),
-            "You are not logged in! Please log in."
+            _("You are not logged in! Please log in.")
         )
 
 
@@ -123,7 +124,7 @@ class TestTaskCreate(BaseTaskTestCase):
             reverse('task_create'), self.missing_field_task_data
         )
         form = response.context['form']
-        self.assertFormError(form, 'status', 'This field is required.')
+        self.assertFormError(form, 'status', _('This field is required.'))
         self.assertEqual(response.status_code, 200)
         self.assertFalse(
             Task.objects.filter(name="missing_field_task").exists()
@@ -136,7 +137,7 @@ class TestTaskCreate(BaseTaskTestCase):
         )
         form = response.context['form']
         self.assertFormError(
-            form, 'name', 'Task with this name already exists.'
+            form, 'name', _('Task with this name already exists.')
         )
         self.assertEqual(response.status_code, 200)
 
@@ -177,7 +178,7 @@ class TestTaskUpdate(BaseTaskTestCase):
             {'name': ''}
         )
         form = response.context['form']
-        self.assertFormError(form, 'name', 'This field is required.')
+        self.assertFormError(form, 'name', _('This field is required.'))
         self.assertEqual(response.status_code, 200)
 
     def test_update_task_unauthorized(self):
@@ -207,7 +208,7 @@ class TestTaskDelete(BaseTaskTestCase):
         self.assertTrue(messages)
         self.assertEqual(
             str(messages[0]),
-            "Task can be deleted only by its creator."
+            _("Task can be deleted only by its creator.")
         )
 
     def test_delete_task_unauthorized(self):

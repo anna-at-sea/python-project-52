@@ -27,4 +27,7 @@ compilemessages:
 	poetry run python3 manage.py compilemessages
 
 test:
+	poetry run pytest
+
+test-coverage:
 	poetry run pytest --cov=task_manager --cov-report xml

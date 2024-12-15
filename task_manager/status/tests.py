@@ -6,6 +6,7 @@ from task_manager.label.models import Label
 from django.urls import reverse
 from django.contrib.messages import get_messages
 from os.path import join
+from django.utils.translation import gettext as _
 
 
 USERS_FIXTURE_PATH = 'task_manager/user/fixtures/'
@@ -27,7 +28,7 @@ class TestStatusRead(TestCase):
         self.assertTrue(messages)
         self.assertEqual(
             str(messages[0]),
-            "You are not logged in! Please log in."
+            _("You are not logged in! Please log in.")
         )
 
     def test_read_status_authorized(self):
@@ -77,7 +78,7 @@ class TestStatusCreate(TestCase):
             reverse('status_create'), self.missing_field_status_data
         )
         form = response.context['form']
-        self.assertFormError(form, 'name', 'This field is required.')
+        self.assertFormError(form, 'name', _('This field is required.'))
         self.assertEqual(response.status_code, 200)
         self.assertFalse(
             Status.objects.filter(name="").exists()
@@ -93,7 +94,7 @@ class TestStatusCreate(TestCase):
         )
         form = response.context['form']
         self.assertFormError(
-            form, 'name', 'Task status with this name already exists.'
+            form, 'name', _('Task status with this name already exists.')
         )
         self.assertEqual(response.status_code, 200)
 
@@ -106,7 +107,7 @@ class TestStatusCreate(TestCase):
         self.assertTrue(messages)
         self.assertEqual(
             str(messages[0]),
-            "You are not logged in! Please log in."
+            _("You are not logged in! Please log in.")
         )
 
 
@@ -140,7 +141,7 @@ class TestStatusUpdate(TestCase):
             {'name': ''}
         )
         form = response.context['form']
-        self.assertFormError(form, 'name', 'This field is required.')
+        self.assertFormError(form, 'name', _('This field is required.'))
         self.assertEqual(response.status_code, 200)
 
     def test_update_status_unauthorized(self):
@@ -150,7 +151,7 @@ class TestStatusUpdate(TestCase):
         self.assertTrue(messages)
         self.assertEqual(
             str(messages[0]),
-            "You are not logged in! Please log in."
+            _("You are not logged in! Please log in.")
         )
 
 
@@ -182,7 +183,7 @@ class TestStatusDelete(TestCase):
         self.assertTrue(messages)
         self.assertEqual(
             str(messages[0]),
-            "You are not logged in! Please log in."
+            _("You are not logged in! Please log in.")
         )
 
     def test_delete_status_in_use(self):
@@ -198,5 +199,5 @@ class TestStatusDelete(TestCase):
         self.assertTrue(messages)
         self.assertEqual(
             str(messages[0]),
-            "Cannot delete status while it is being used"
+            _("Cannot delete status while it is being used")
         )

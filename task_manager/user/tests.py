@@ -3,6 +3,7 @@ from task_manager.user.models import User
 from task_manager.user.forms import UserForm
 from django.urls import reverse
 from django.contrib.messages import get_messages
+from django.utils.translation import gettext as _
 
 
 class TestAuthentication(TestCase):
@@ -75,7 +76,7 @@ class TestUserCreate(TestCase):
             reverse('user_create'), self.missing_field_user_data
         )
         form = response.context['form']
-        self.assertFormError(form, 'last_name', 'This field is required.')
+        self.assertFormError(form, 'last_name', _('This field is required.'))
         self.assertEqual(response.status_code, 200)
         self.assertFalse(
             User.objects.filter(username="missing_field_user").exists()
@@ -87,7 +88,7 @@ class TestUserCreate(TestCase):
         )
         form = response.context['form']
         self.assertFormError(
-            form, 'username', 'A user with this username already exists.'
+            form, 'username', _('A user with this username already exists.')
         )
         self.assertEqual(response.status_code, 200)
 
@@ -155,7 +156,7 @@ class TestUserUpdate(TestCase):
             }
         )
         form = response.context['form']
-        self.assertFormError(form, 'first_name', 'This field is required.')
+        self.assertFormError(form, 'first_name', _('This field is required.'))
         self.assertEqual(response.status_code, 200)
 
     def test_update_other_user(self):
@@ -169,7 +170,7 @@ class TestUserUpdate(TestCase):
         self.assertTrue(messages)
         self.assertEqual(
             str(messages[0]),
-            "You don't have permission to edit this user."
+            _("You don't have permission to edit this user.")
         )
 
     def test_update_user_unauthorized(self):
@@ -179,7 +180,7 @@ class TestUserUpdate(TestCase):
         self.assertTrue(messages)
         self.assertEqual(
             str(messages[0]),
-            "You are not logged in! Please log in."
+            _("You are not logged in! Please log in.")
         )
 
 
@@ -210,7 +211,7 @@ class TestUserDelete(TestCase):
         self.assertTrue(messages)
         self.assertEqual(
             str(messages[0]),
-            "You don't have permission to edit this user."
+            _("You don't have permission to edit this user.")
         )
         self.assertTrue(User.objects.filter(id=2).exists())
 
@@ -221,5 +222,5 @@ class TestUserDelete(TestCase):
         self.assertTrue(messages)
         self.assertEqual(
             str(messages[0]),
-            "You are not logged in! Please log in."
+            _("You are not logged in! Please log in.")
         )

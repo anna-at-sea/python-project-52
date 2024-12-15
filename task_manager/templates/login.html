@@ -22,7 +22,7 @@
     <form action="{% url 'login' %}" method="post">
         {% csrf_token %}
         {{ form|crispy }}
-        <input class="btn btn-primary" type="submit" value="{% translate 'Log in' %}">
+        <input class="btn btn-primary" type="submit" value="{% translate 'Sign in' %}">
     </form>
   </div>
 {% endblock %}
