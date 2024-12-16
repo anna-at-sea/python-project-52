@@ -275,7 +275,7 @@ class TestTaskFilter(BaseTaskTestCase):
     def test_labels_filter(self):
         request = self.factory.get(
             reverse('task_index'),
-            {'labels': [self.label2.id]}
+            {'labels': self.label2.id}
         )
         request.user = self.user
         response = TaskIndexView.as_view()(request)
@@ -284,17 +284,8 @@ class TestTaskFilter(BaseTaskTestCase):
         self.assertContains(response, "testtask")
         filtered_tasks = response.context_data['object_list']
         self.assertEqual(len(filtered_tasks), 2)
-        request2 = self.factory.get(
-            reverse('task_index'),
-            {'labels': [self.label2.id, self.label3.id]}
-        )
-        request2.user = self.user
-        response = TaskIndexView.as_view()(request2)
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "testtask")
-        self.assertContains(response, "task1")
         request3 = self.factory.get(
-            reverse('task_index'), {'labels': [self.label1.id]}
+            reverse('task_index'), {'labels': self.label1.id}
         )
         request3.user = self.user
         response = TaskIndexView.as_view()(request3)

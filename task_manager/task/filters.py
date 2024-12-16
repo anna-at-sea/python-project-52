@@ -15,9 +15,9 @@ class TaskFilter(django_filters.FilterSet):
         queryset=User.objects.all(),
         label=_("Executor")
     )
-    labels = django_filters.ModelMultipleChoiceFilter(
+    labels = django_filters.ModelChoiceFilter(
         queryset=Label.objects.all(),
-        label=_("Labels")
+        label=_("Label")
     )
     created_by_me = django_filters.BooleanFilter(
         method='filter_created_by_me',

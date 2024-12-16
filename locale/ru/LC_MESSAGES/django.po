@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-16 22:12+0000\n"
+"POT-Creation-Date: 2024-12-16 22:59+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -104,12 +104,9 @@ msgstr "Статус"
 msgid "Executor"
 msgstr "Исполнитель"
 
-#: task_manager/task/filters.py:20 task_manager/task/models.py:30
-#: task_manager/templates/base.html:29
-#: task_manager/templates/label/index.html:20
-#: task_manager/templates/task/page.html:42
-msgid "Labels"
-msgstr "Метки"
+#: task_manager/task/filters.py:20
+msgid "Label"
+msgstr "Метка"
 
 #: task_manager/task/filters.py:24
 msgid "Show only my tasks"
@@ -123,6 +120,12 @@ msgstr "Задача с таким именем уже существует"
 #: task_manager/task/models.py:14
 msgid "Description"
 msgstr "Описание"
+
+#: task_manager/task/models.py:30 task_manager/templates/base.html:29
+#: task_manager/templates/label/index.html:20
+#: task_manager/templates/task/page.html:42
+msgid "Labels"
+msgstr "Метки"
 
 #: task_manager/task/tests.py:211 task_manager/task/views.py:97
 msgid "Task can be deleted only by its creator."
