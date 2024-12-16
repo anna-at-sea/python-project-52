@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-15 21:45+0000\n"
+"POT-Creation-Date: 2024-12-16 00:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -202,6 +202,7 @@ msgstr "Вы уверены, что хотите удалить "
 #: task_manager/templates/label/delete.html:10
 #: task_manager/templates/status/delete.html:10
 #: task_manager/templates/task/delete.html:10
+#: task_manager/templates/user/delete.html:10
 msgid "Yes, delete"
 msgstr "Да, удалить"
 
@@ -229,7 +230,6 @@ msgstr "Изменить"
 #: task_manager/templates/status/index.html:39
 #: task_manager/templates/task/index.html:55
 #: task_manager/templates/task/page.html:57
-#: task_manager/templates/user/delete.html:10
 #: task_manager/templates/user/index.html:40
 msgid "Delete"
 msgstr "Удалить"
