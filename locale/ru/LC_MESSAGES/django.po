@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-16 21:56+0000\n"
+"POT-Creation-Date: 2024-12-16 22:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,7 +26,7 @@ msgid "Label with this name already exists."
 msgstr "Метка с таким именем уже существует"
 
 #: task_manager/label/models.py:8 task_manager/status/models.py:7
-#: task_manager/templates/label/index.html:25
+#: task_manager/task/models.py:11 task_manager/templates/label/index.html:25
 #: task_manager/templates/status/index.html:25
 #: task_manager/templates/task/index.html:35
 msgid "Name"
@@ -92,17 +92,20 @@ msgstr "Статус успешно изменен"
 msgid "Status is deleted successfully"
 msgstr "Статус успешно удален"
 
-#: task_manager/task/filters.py:12 task_manager/templates/task/index.html:36
+#: task_manager/task/filters.py:12 task_manager/task/models.py:17
+#: task_manager/templates/task/index.html:36
 #: task_manager/templates/task/page.html:33
 msgid "Status"
 msgstr "Статус"
 
-#: task_manager/task/filters.py:16 task_manager/templates/task/index.html:38
+#: task_manager/task/filters.py:16 task_manager/task/models.py:26
+#: task_manager/templates/task/index.html:38
 #: task_manager/templates/task/page.html:25
 msgid "Executor"
 msgstr "Исполнитель"
 
-#: task_manager/task/filters.py:20 task_manager/templates/base.html:29
+#: task_manager/task/filters.py:20 task_manager/task/models.py:30
+#: task_manager/templates/base.html:29
 #: task_manager/templates/label/index.html:20
 #: task_manager/templates/task/page.html:42
 msgid "Labels"
@@ -116,6 +119,10 @@ msgstr "Только свои задачи"
 #: task_manager/task/tests.py:140
 msgid "Task with this name already exists."
 msgstr "Задача с таким именем уже существует"
+
+#: task_manager/task/models.py:14
+msgid "Description"
+msgstr "Описание"
 
 #: task_manager/task/tests.py:211 task_manager/task/views.py:97
 msgid "Task can be deleted only by its creator."
