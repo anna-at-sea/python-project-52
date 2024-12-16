@@ -85,9 +85,9 @@ class TaskFormDeleteView(LoginRequiredMixin, DeleteView):
         messages.error(self.request, _("You are not logged in! Please log in."))
         return redirect('login')
 
-    def delete(self, form, *args, **kwargs):
+    def form_valid(self, form):
         messages.success(self.request, _("Task is deleted successfully"))
-        return super().delete(self.request, *args, **kwargs)
+        return super().form_valid(form)
 
     def dispatch(self, request, *args, **kwargs):
         try:

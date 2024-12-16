@@ -9,6 +9,7 @@ from django.utils.translation import gettext as _
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.core.exceptions import PermissionDenied
+from django.db.models import ProtectedError
 
 
 class IndexView(View):
@@ -88,6 +89,12 @@ class UserFormDeleteView(LoginRequiredMixin, DeleteView):
             raise PermissionDenied
         return user
 
-    def delete(self, request, *args, **kwargs):
-        messages.success(request, _("User is deleted successfully"))
-        return super().delete(request, *args, **kwargs)
+    def form_valid(self, form):
+        try:
+            self.object.delete()
+            messages.success(self.request, _("User is deleted successfully"))
+        except ProtectedError:
+            messages.error(
+                self.request, _("Cannot delete user while they are in use")
+            )
+        return redirect('user_index')

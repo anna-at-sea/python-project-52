@@ -66,15 +66,12 @@ class LabelFormDeleteView(LoginRequiredMixin, DeleteView):
         messages.error(self.request, _("You are not logged in! Please log in."))
         return redirect('login')
 
-    def delete(self, form, *args, **kwargs):
-        messages.success(self.request, _("Label is deleted successfully"))
-        return super().delete(self.request, *args, **kwargs)
-
-    def dispatch(self, request, *args, **kwargs):
+    def form_valid(self, form):
         try:
-            return super().dispatch(request, *args, **kwargs)
+            self.object.delete()
+            messages.success(self.request, _("Label is deleted successfully"))
         except ValidationError:
             messages.error(
-                request, _("Cannot delete label while it is being used")
+                self.request, _("Cannot delete label while it is being used")
             )
-            return redirect('label_index')
+        return redirect('label_index')

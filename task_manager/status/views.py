@@ -63,18 +63,16 @@ class StatusFormDeleteView(LoginRequiredMixin, DeleteView):
     context_object_name = 'status'
 
     def handle_no_permission(self):
+        print("handle no permission called")
         messages.error(self.request, _("You are not logged in! Please log in."))
         return redirect('login')
 
-    def delete(self, form, *args, **kwargs):
-        messages.success(self.request, _("Status is deleted successfully"))
-        return super().delete(self.request, *args, **kwargs)
-
-    def dispatch(self, request, *args, **kwargs):
+    def form_valid(self, form):
         try:
-            return super().dispatch(request, *args, **kwargs)
+            self.object.delete()
+            messages.success(self.request, _("Status is deleted successfully"))
         except ProtectedError:
             messages.error(
-                request, _("Cannot delete status while it is being used")
+                self.request, _("Cannot delete status while it is being used")
             )
-            return redirect('status_index')
+        return redirect('status_index')
