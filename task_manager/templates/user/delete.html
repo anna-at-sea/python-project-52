@@ -5,7 +5,7 @@
     <h1>{% translate "Delete user" %}</h1>
     <p></p>
     <p>{% translate "Are you sure you want to delete " %}{{ user.first_name }} {{ user.last_name }}?</p>
-    <form action="{% url 'user_delete' id=user.id %}" method="post">
+    <form action="{% url 'user_delete' pk=user.id %}" method="post">
         {% csrf_token %}
         <input type="submit" class="btn btn-danger" value="{% translate 'Yes, delete' %}">
     </form>
