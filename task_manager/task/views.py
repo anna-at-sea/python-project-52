@@ -1,16 +1,17 @@
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
+from django.utils.translation import gettext as _
 from django.views import View
 from django.views.generic.edit import CreateView, DeleteView
 from django.views.generic import UpdateView
-from task_manager.task.models import Task
-from task_manager.task.forms import TaskForm
-from django.contrib import messages
-from django.utils.translation import gettext as _
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django_filters.views import FilterView
+
 from .filters import TaskFilter
-from django.urls import reverse_lazy
-from django.core.exceptions import PermissionDenied
+from .models import Task
+from .forms import TaskForm
 
 
 class TaskIndexView(LoginRequiredMixin, FilterView):

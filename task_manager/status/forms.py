@@ -1,7 +1,8 @@
+from django.contrib.auth.forms import ValidationError
 from django.forms import ModelForm
 from django.utils.translation import gettext_lazy as _
+
 from .models import Status
-from django.contrib.auth.forms import ValidationError
 
 
 class StatusForm(ModelForm):

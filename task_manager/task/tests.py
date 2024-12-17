@@ -1,14 +1,16 @@
+from os.path import join
+
+from django.contrib.messages import get_messages
 from django.test import TestCase, RequestFactory
+from django.urls import reverse
+from django.utils.translation import gettext as _
+from task_manager.label.models import Label
 from task_manager.status.models import Status
 from task_manager.user.models import User
-from task_manager.task.models import Task
-from task_manager.task.filters import TaskFilter
-from task_manager.task.views import TaskIndexView
-from task_manager.label.models import Label
-from django.urls import reverse
-from django.contrib.messages import get_messages
-from os.path import join
-from django.utils.translation import gettext as _
+
+from .filters import TaskFilter
+from .models import Task
+from .views import TaskIndexView
 
 
 USERS_FIXTURE_PATH = 'task_manager/user/fixtures/'

@@ -1,6 +1,7 @@
-from django.forms import CharField, PasswordInput
 from django.contrib.auth.forms import UserCreationForm, ValidationError
+from django.forms import CharField, PasswordInput
 from django.utils.translation import gettext_lazy as _
+
 from .models import User
 
 
