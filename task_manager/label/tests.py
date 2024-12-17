@@ -4,6 +4,7 @@ from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.translation import gettext as _
+
 from task_manager.label.models import Label
 from task_manager.status.models import Status
 from task_manager.task.models import Task
