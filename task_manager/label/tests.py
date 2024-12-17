@@ -4,12 +4,11 @@ from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.translation import gettext as _
-
 from task_manager.status.models import Status
 from task_manager.task.models import Task
 from task_manager.user.models import User
-from .models import Label
 
+from .models import Label
 
 USERS_FIXTURE_PATH = 'task_manager/user/fixtures/'
 TASKS_FIXTURE_PATH = 'task_manager/task/fixtures/'
