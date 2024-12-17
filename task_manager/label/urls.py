@@ -1,5 +1,6 @@
 from django.urls import path
-from task_manager.label import views
+
+from . import views
 
 urlpatterns = [
     path('', views.LabelIndexView.as_view(), name='label_index'),

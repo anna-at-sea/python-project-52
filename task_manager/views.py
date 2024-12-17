@@ -1,10 +1,10 @@
-from django.shortcuts import render, redirect
-from django.views.generic.base import TemplateView
-from django.views import View
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth import login, logout
 from django.contrib import messages
+from django.contrib.auth import login, logout
+from django.contrib.auth.forms import AuthenticationForm
+from django.shortcuts import render, redirect
 from django.utils.translation import gettext as _
+from django.views import View
+from django.views.generic.base import TemplateView
 
 
 class IndexView(TemplateView):

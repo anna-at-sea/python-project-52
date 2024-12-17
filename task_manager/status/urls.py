@@ -1,5 +1,6 @@
 from django.urls import path
-from task_manager.status import views
+
+from . import views
 
 urlpatterns = [
     path('', views.StatusIndexView.as_view(), name='status_index'),

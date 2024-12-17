@@ -1,14 +1,15 @@
-from django.shortcuts import render, redirect
-from django.views import View
-from django.views.generic.edit import CreateView, DeleteView
-from django.views.generic import UpdateView
-from task_manager.status.models import Status
-from django.db.models import ProtectedError
-from task_manager.status.forms import StatusForm
 from django.contrib import messages
-from django.utils.translation import gettext as _
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import ProtectedError
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
+from django.utils.translation import gettext as _
+from django.views import View
+from django.views.generic import UpdateView
+from django.views.generic.edit import CreateView, DeleteView
+
+from .forms import StatusForm
+from .models import Status
 
 
 class StatusIndexView(LoginRequiredMixin, View):

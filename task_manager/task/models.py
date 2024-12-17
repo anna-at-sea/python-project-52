@@ -1,9 +1,10 @@
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+
+from task_manager.label.models import Label
 from task_manager.status.models import Status
 from task_manager.user.models import User
-from task_manager.label.models import Label
-from django.utils.translation import gettext_lazy as _
 
 
 class Task(models.Model):

@@ -1,5 +1,7 @@
 from django.urls import path
-from task_manager.user import views
+
+from . import views
+
 
 urlpatterns = [
     path('', views.IndexView.as_view(), name='user_index'),

@@ -1,9 +1,9 @@
-from django.test import TestCase
-from task_manager.user.models import User
-from task_manager.user.forms import UserForm
-from django.urls import reverse
 from django.contrib.messages import get_messages
+from django.test import TestCase
+from django.urls import reverse
 from django.utils.translation import gettext as _
+
+from .models import User
 
 
 class TestAuthentication(TestCase):
