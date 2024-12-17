@@ -5,7 +5,6 @@ from task_manager.label.models import Label
 from task_manager.status.models import Status
 from task_manager.user.models import User
 
-
 class Task(models.Model):
     name = models.CharField(
         max_length=150, blank=False, verbose_name=_("Name")
