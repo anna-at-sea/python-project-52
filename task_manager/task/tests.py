@@ -11,7 +11,6 @@ from task_manager.task.views import TaskIndexView
 from task_manager.status.models import Status
 from task_manager.user.models import User
 
-
 USERS_FIXTURE_PATH = 'task_manager/user/fixtures/'
 STATUSES_FIXTURE_PATH = 'task_manager/status/fixtures/'
 LABELS_FIXTURE_PATH = 'task_manager/label/fixtures/'

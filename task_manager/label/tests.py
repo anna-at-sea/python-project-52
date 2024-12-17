@@ -10,7 +10,6 @@ from task_manager.status.models import Status
 from task_manager.task.models import Task
 from task_manager.user.models import User
 
-
 USERS_FIXTURE_PATH = 'task_manager/user/fixtures/'
 TASKS_FIXTURE_PATH = 'task_manager/task/fixtures/'
 STATUSES_FIXTURE_PATH = 'task_manager/status/fixtures/'

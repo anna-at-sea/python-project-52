@@ -8,7 +8,6 @@ from django.utils.translation import gettext as _
 from task_manager.status.models import Status
 from task_manager.user.models import User
 
-
 USERS_FIXTURE_PATH = 'task_manager/user/fixtures/'
 TASKS_FIXTURE_PATH = 'task_manager/task/fixtures/'
 LABELS_FIXTURE_PATH = 'task_manager/label/fixtures/'
