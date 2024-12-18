@@ -1,9 +1,7 @@
 from django.contrib import messages
-from django.contrib.auth import login, logout
-from django.contrib.auth.forms import AuthenticationForm
-from django.shortcuts import redirect, render
+from django.contrib.auth.views import LoginView, LogoutView
+from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
-from django.views import View
 from django.views.generic.base import TemplateView
 
 
@@ -16,33 +14,27 @@ class IndexView(TemplateView):
         return context
 
 
-class LoginView(View):
+class UserLoginView(LoginView):
+    template_name = 'login.html'
+    redirect_authenticated_user = True
 
-    def get(self, request, *args, **kwargs):
-        form = AuthenticationForm()
-        return render(request, 'login.html', {'form': form})
-
-    def post(self, request, *args, **kwargs):
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            messages.add_message(
-                request,
-                messages.SUCCESS,
-                _("You are logged in")
-            )
-            return redirect('index')
-        return render(request, 'login.html', {'form': form})
+    def get_default_redirect_url(self):
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            _("You are logged in")
+        )
+        return reverse_lazy('index')
 
 
-class LogoutView(View):
+class UserLogoutView(LogoutView):
+    template_name = 'logout.html'
+    next_page = reverse_lazy('index')
 
-    def post(self, request, *args, **kwargs):
-        logout(request)
+    def dispatch(self, request, *args, **kwargs):
         messages.add_message(
             request,
             messages.INFO,
             _("You are logged out")
         )
-        return redirect('index')
+        return super().dispatch(request, *args, **kwargs)
