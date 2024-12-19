@@ -1,9 +1,14 @@
+from os.path import join
+import json
+
 from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from .models import User
+
+TEST_FIXTURE_PATH = 'task_manager/user/fixtures/'
 
 
 class TestAuthentication(TestCase):
@@ -40,27 +45,12 @@ class TestUserCreate(TestCase):
     fixtures = ["users.json"]
 
     def setUp(self):
-        self.complete_user_data = {
-            "username": "complete_user",
-            "password1": "correct_password",
-            "password2": "correct_password",
-            "first_name": "John",
-            "last_name": "Smith"
-        }
-        self.missing_field_user_data = {
-            "username": "missing_field_user",
-            "password1": "correct_password",
-            "password2": "correct_password",
-            "first_name": "John"
-        }
         self.user = User.objects.get(id=1)
-        self.duplicate_user_data = {
-            "username": "testuser",
-            "password1": "test",
-            "password2": "test",
-            "first_name": "Jane",
-            "last_name": "Doe"
-        }
+        with open(join(TEST_FIXTURE_PATH, "test_data.json")) as f:
+            self.users_data = json.load(f)
+        self.complete_user_data = self.users_data[0]
+        self.missing_field_user_data = self.users_data[1]
+        self.duplicate_user_data = self.users_data[2]
 
     def test_create_user_success(self):
         response = self.client.post(
@@ -70,6 +60,12 @@ class TestUserCreate(TestCase):
         user = User.objects.get(username='complete_user')
         self.assertIsNotNone(user)
         self.assertTrue(User.objects.filter(username="complete_user").exists())
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(messages)
+        self.assertEqual(
+            str(messages[0]),
+            _("User is registered successfully")
+        )
 
     def test_create_user_missing_field(self):
         response = self.client.post(
@@ -88,7 +84,7 @@ class TestUserCreate(TestCase):
         )
         form = response.context['form']
         self.assertFormError(
-            form, 'username', _('A user with this username already exists.')
+            form, 'username', _('A user with that username already exists.')
         )
         self.assertEqual(response.status_code, 200)
 
@@ -121,6 +117,11 @@ class TestUserUpdate(TestCase):
 
     def setUp(self):
         self.user = User.objects.get(id=2)
+        with open(join(TEST_FIXTURE_PATH, "test_data.json")) as f:
+            self.users_data = json.load(f)
+        self.complete_user_data = self.users_data[3]
+        self.missing_field_user_data = self.users_data[4]
+        self.duplicate_user_data = self.users_data[5]
 
     def test_update_user_success(self):
         self.client.login(
@@ -129,17 +130,17 @@ class TestUserUpdate(TestCase):
         )
         response = self.client.post(
             reverse('user_update', kwargs={'pk': 2}),
-            {
-                'username': 'new_username',
-                'password1': 'correct_password',
-                'password2': 'correct_password',
-                'first_name': 'John',
-                'last_name': 'Doe'
-            }
+            self.complete_user_data
         )
         self.assertEqual(response.status_code, 302)
         self.user.refresh_from_db()
         self.assertEqual(self.user.username, 'new_username')
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(messages)
+        self.assertEqual(
+            str(messages[0]),
+            _("User is updated successfully")
+        )
 
     def test_update_user_missing_field(self):
         self.client.login(
@@ -148,15 +149,25 @@ class TestUserUpdate(TestCase):
         )
         response = self.client.post(
             reverse('user_update', kwargs={'pk': 2}),
-            {
-                'username': 'new_username',
-                'password1': 'correct_password',
-                'password2': 'correct_password',
-                'last_name': 'Doe'
-            }
+            self.missing_field_user_data
         )
         form = response.context['form']
         self.assertFormError(form, 'first_name', _('This field is required.'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_update_duplicate_username(self):
+        self.client.login(
+            username=self.user.username,
+            password="correct_password"
+        )
+        response = self.client.post(
+            reverse('user_update', kwargs={'pk': 2}),
+            self.duplicate_user_data
+        )
+        form = response.context['form']
+        self.assertFormError(
+            form, 'username', _('A user with that username already exists.')
+        )
         self.assertEqual(response.status_code, 200)
 
     def test_update_other_user(self):
@@ -199,6 +210,12 @@ class TestUserDelete(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('user_index'))
         self.assertFalse(User.objects.filter(id=1).exists())
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(messages)
+        self.assertEqual(
+            str(messages[0]),
+            _("User is deleted successfully")
+        )
 
     def test_delete_other_user(self):
         self.client.login(

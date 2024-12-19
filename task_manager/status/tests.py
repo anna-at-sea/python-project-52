@@ -67,6 +67,12 @@ class TestStatusCreate(TestCase):
         status = Status.objects.get(name='complete_status')
         self.assertIsNotNone(status)
         self.assertTrue(Status.objects.filter(name="complete_status").exists())
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(messages)
+        self.assertEqual(
+            str(messages[0]),
+            _("Status is created successfully")
+        )
 
     def test_create_status_missing_field(self):
         self.client.login(
@@ -129,6 +135,12 @@ class TestStatusUpdate(TestCase):
         self.assertEqual(response.status_code, 302)
         self.status.refresh_from_db()
         self.assertEqual(self.status.name, 'new_status')
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(messages)
+        self.assertEqual(
+            str(messages[0]),
+            _("Status is updated successfully")
+        )
 
     def test_update_status_missing_field(self):
         self.client.login(
@@ -174,6 +186,12 @@ class TestStatusDelete(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('status_index'))
         self.assertFalse(Status.objects.filter(id=1).exists())
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(messages)
+        self.assertEqual(
+            str(messages[0]),
+            _("Status is deleted successfully")
+        )
 
     def test_delete_status_unauthorized(self):
         response = self.client.post(reverse('status_delete', kwargs={'pk': 1}))

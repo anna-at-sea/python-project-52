@@ -1,0 +1,40 @@
+[
+    {
+        "username": "complete_user",
+        "password1": "correct_password",
+        "password2": "correct_password",
+        "first_name": "John",
+        "last_name": "Smith"
+    },
+    {
+        "username": "missing_field_user",
+        "password1": "correct_password",
+        "password2": "correct_password",
+        "first_name": "John"
+    },
+    {
+        "username": "testuser",
+        "password1": "test",
+        "password2": "test",
+        "first_name": "Jane",
+        "last_name": "Doe"
+    },
+    {
+        "username": "new_username",
+        "password1": "correct_password",
+        "password2": "correct_password",
+        "first_name": "John",
+        "last_name": "Doe"
+    },
+    {
+        "username": "new_username",
+        "password1": "correct_password",
+        "password2": "correct_password",
+        "last_name": "Doe"
+    },
+    {
+        "username": "testuser",
+        "password1": "correct_password",
+        "password2": "correct_password"
+    }
+]

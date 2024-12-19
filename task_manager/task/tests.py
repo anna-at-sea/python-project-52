@@ -103,6 +103,12 @@ class TestTaskCreate(BaseTaskTestCase):
         self.assertIsNotNone(task)
         self.assertTrue(Task.objects.filter(name="complete_task").exists())
         self.assertEqual(task.creator, self.user)
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(messages)
+        self.assertEqual(
+            str(messages[0]),
+            _("Task is created successfully")
+        )
 
     def test_create_full_task_success(self):
         self.login_user(self.user)
@@ -117,6 +123,12 @@ class TestTaskCreate(BaseTaskTestCase):
         self.assertIn(self.label1, labels)
         self.assertIn(self.label2, labels)
         self.assertEqual(labels.count(), 2)
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(messages)
+        self.assertEqual(
+            str(messages[0]),
+            _("Task is created successfully")
+        )
 
     def test_create_task_missing_field(self):
         self.login_user(self.user)
@@ -170,6 +182,12 @@ class TestTaskUpdate(BaseTaskTestCase):
         self.task.refresh_from_db()
         self.assertEqual(self.task.name, 'new_task')
         self.assertEqual(self.task.description, 'new_description')
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(messages)
+        self.assertEqual(
+            str(messages[0]),
+            _("Task is updated successfully")
+        )
 
     def test_update_task_missing_field(self):
         self.login_user(self.user)
@@ -199,6 +217,12 @@ class TestTaskDelete(BaseTaskTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('task_index'))
         self.assertFalse(Task.objects.filter(id=1).exists())
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(messages)
+        self.assertEqual(
+            str(messages[0]),
+            _("Task is deleted successfully")
+        )
 
     def test_delete_task_of_other_user(self):
         self.login_user(self.other_user)

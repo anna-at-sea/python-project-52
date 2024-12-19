@@ -69,6 +69,12 @@ class TestLabelCreate(TestCase):
         label = Label.objects.get(name='complete_label')
         self.assertIsNotNone(label)
         self.assertTrue(Label.objects.filter(name="complete_label").exists())
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(messages)
+        self.assertEqual(
+            str(messages[0]),
+            _("Label is created successfully")
+        )
 
     def test_create_label_missing_field(self):
         self.client.login(
@@ -131,6 +137,12 @@ class TestLabelUpdate(TestCase):
         self.assertEqual(response.status_code, 302)
         self.label.refresh_from_db()
         self.assertEqual(self.label.name, 'new_label')
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(messages)
+        self.assertEqual(
+            str(messages[0]),
+            _("Label is updated successfully")
+        )
 
     def test_update_label_missing_field(self):
         self.client.login(
@@ -181,6 +193,12 @@ class TestLebelDelete(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('label_index'))
         self.assertFalse(Label.objects.filter(id=1).exists())
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(messages)
+        self.assertEqual(
+            str(messages[0]),
+            _("Label is deleted successfully")
+        )
 
     def test_delete_label_unauthorized(self):
         response = self.client.post(reverse('label_delete', kwargs={'pk': 1}))

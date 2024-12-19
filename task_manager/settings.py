@@ -27,6 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv()
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', False)
+DATABASE_URL = os.getenv('DATABASE_URL')
 
 ALLOWED_HOSTS = [
     'webserver',
@@ -106,7 +107,7 @@ MESSAGE_TAGS = {
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='sqlite:///db.sqlite3',
+        default=os.getenv('DATABASE_URL'),
         conn_max_age=600,
         conn_health_checks=True,
     )
@@ -132,18 +133,18 @@ LOGIN_URL = '/login/'
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'ru-ru'
-
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = 'en'
 
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
 LANGUAGES = [
+    ('ru', 'Russian'),
     ('en', 'English'),
-    ('ru', 'Русский'),
 ]
+
+TIME_ZONE = 'UTC'
 
 LOCALE_PATHS = [
     BASE_DIR / 'locale',
