@@ -1,10 +1,10 @@
+import json
 from os.path import join
 
 from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.translation import gettext as _
-import json
 
 from .models import User
 
