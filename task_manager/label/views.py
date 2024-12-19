@@ -20,7 +20,7 @@ class LabelIndexView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         labels = Label.objects.all()
-        return render(request, 'label/index.html', context={
+        return render(request, 'pages/label/index.html', context={
             'labels': labels
         })
 
@@ -28,7 +28,7 @@ class LabelIndexView(LoginRequiredMixin, View):
 class LabelFormCreateView(LoginRequiredMixin, CreateView):
     model = Label
     form_class = LabelForm
-    template_name = 'label/create.html'
+    template_name = 'pages/label/create.html'
     success_url = reverse_lazy('label_index')
 
     def handle_no_permission(self):
@@ -44,7 +44,7 @@ class LabelFormCreateView(LoginRequiredMixin, CreateView):
 class LabelFormUpdateView(LoginRequiredMixin, UpdateView):
     model = Label
     form_class = LabelForm
-    template_name = 'label/update.html'
+    template_name = 'pages/label/update.html'
     success_url = reverse_lazy('label_index')
     context_object_name = 'label'
 
@@ -59,7 +59,7 @@ class LabelFormUpdateView(LoginRequiredMixin, UpdateView):
 
 class LabelFormDeleteView(LoginRequiredMixin, DeleteView):
     model = Label
-    template_name = 'label/delete.html'
+    template_name = 'pages/label/delete.html'
     success_url = reverse_lazy('label_index')
     context_object_name = 'label'
 

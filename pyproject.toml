@@ -19,7 +19,6 @@ django-crispy-forms = "^2.3"
 crispy-bootstrap5 = "^2024.10"
 django-filter = "^24.3"
 rollbar = "^1.1.0"
-pytest-cov = "^6.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -27,6 +26,7 @@ flake8 = "^7.1.1"
 pytest = "^8.3.3"
 pytest-django = "^4.9.0"
 flake8-import-order = "^0.18.2"
+pytest-cov = "^6.0.0"
 
 [build-system]
 requires = ["poetry-core"]

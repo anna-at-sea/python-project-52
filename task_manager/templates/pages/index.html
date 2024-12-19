@@ -1,0 +1,13 @@
+{% extends 'layouts/base.html' %}
+{% load i18n %}
+{% include 'partials/flash_message.html' %}
+
+{% block content %}
+<main class="container">
+  <div class="bg-light p-5 rounded">
+    <h1>{% translate "Hello from Hexlet!" %}</h1>
+    <p class="lead">{% translate "Practical programming courses" %}</p>
+    <a class="btn btn-lg btn-primary" href="https://ru.hexlet.io/" role="button">{% translate "Learn more" %}</a>
+  </div>
+</main>
+{% endblock %}

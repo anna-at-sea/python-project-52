@@ -17,7 +17,7 @@ class IndexView(View):
 
     def get(self, request, *args, **kwargs):
         users = User.objects.all()
-        return render(request, 'user/index.html', context={
+        return render(request, 'pages/user/index.html', context={
             'users': users
         })
 
@@ -25,7 +25,7 @@ class IndexView(View):
 class UserFormCreateView(CreateView):
     model = User
     form_class = UserForm
-    template_name = 'user/create.html'
+    template_name = 'pages/user/create.html'
     success_url = reverse_lazy('login')
 
     def form_valid(self, form):
@@ -37,7 +37,7 @@ class UserFormCreateView(CreateView):
 class UserFormUpdateView(LoginRequiredMixin, UpdateView):
     model = User
     form_class = UserForm
-    template_name = 'user/update.html'
+    template_name = 'pages/user/update.html'
     success_url = reverse_lazy('user_index')
     context_object_name = 'form'
 
@@ -67,7 +67,7 @@ class UserFormUpdateView(LoginRequiredMixin, UpdateView):
 
 class UserFormDeleteView(LoginRequiredMixin, DeleteView):
     model = User
-    template_name = 'user/delete.html'
+    template_name = 'pages/user/delete.html'
     success_url = reverse_lazy('user_index')
     context_object_name = 'user'
 

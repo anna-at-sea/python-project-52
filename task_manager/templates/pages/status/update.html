@@ -1,0 +1,9 @@
+{% extends "layouts/form_base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    {% url 'status_update' pk=status.id as action_url %}
+    {% with heading=_("Update status") action_url=action_url form=form|crispy button_text=_("Udate") %}
+        {{ block.super }}
+    {% endwith %}
+{% endblock %}

@@ -20,7 +20,7 @@ class StatusIndexView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         statuses = Status.objects.all()
-        return render(request, 'status/index.html', context={
+        return render(request, 'pages/status/index.html', context={
             'statuses': statuses
         })
 
@@ -28,7 +28,7 @@ class StatusIndexView(LoginRequiredMixin, View):
 class StatusFormCreateView(LoginRequiredMixin, CreateView):
     model = Status
     form_class = StatusForm
-    template_name = 'status/create.html'
+    template_name = 'pages/status/create.html'
     success_url = reverse_lazy('status_index')
 
     def handle_no_permission(self):
@@ -44,7 +44,7 @@ class StatusFormCreateView(LoginRequiredMixin, CreateView):
 class StatusFormUpdateView(LoginRequiredMixin, UpdateView):
     model = Status
     form_class = StatusForm
-    template_name = 'status/update.html'
+    template_name = 'pages/status/update.html'
     success_url = reverse_lazy('status_index')
     context_object_name = 'status'
 
@@ -59,7 +59,7 @@ class StatusFormUpdateView(LoginRequiredMixin, UpdateView):
 
 class StatusFormDeleteView(LoginRequiredMixin, DeleteView):
     model = Status
-    template_name = 'status/delete.html'
+    template_name = 'pages/status/delete.html'
     success_url = reverse_lazy('status_index')
     context_object_name = 'status'
 

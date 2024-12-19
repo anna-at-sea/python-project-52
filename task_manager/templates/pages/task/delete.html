@@ -1,0 +1,8 @@
+{% extends "layouts/form_base.html" %}
+
+{% block content %}
+    {% url 'task_delete' pk=task.id as action_url %}
+    {% with heading=_("Delete task") delete_prompt=_("Are you sure you want to delete ")|add:task.name|add:"?" action_url=action_url button_class='btn btn-danger' button_text=_("Yes, delete") %}
+        {{ block.super }}
+    {% endwith %}
+{% endblock %}

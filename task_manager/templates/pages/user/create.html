@@ -1,0 +1,9 @@
+{% extends "layouts/form_base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    {% url 'user_create' as action_url %}
+    {% with heading=_("Registration") action_url=action_url form=form|crispy button_text=_("Register") %}
+        {{ block.super }}
+    {% endwith %}
+{% endblock %}

@@ -16,7 +16,7 @@ from .models import Task
 
 class TaskIndexView(LoginRequiredMixin, FilterView):
     model = Task
-    template_name = 'task/index.html'
+    template_name = 'pages/task/index.html'
     context_object_name = 'tasks'
     filterset_class = TaskFilter
 
@@ -34,7 +34,7 @@ class TaskPageView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         task_id = kwargs.get('pk')
         task = Task.objects.get(id=task_id)
-        return render(request, 'task/page.html', context={
+        return render(request, 'pages/task/page.html', context={
             'task': task
         })
 
@@ -42,7 +42,7 @@ class TaskPageView(LoginRequiredMixin, View):
 class TaskFormCreateView(LoginRequiredMixin, CreateView):
     model = Task
     form_class = TaskForm
-    template_name = 'task/create.html'
+    template_name = 'pages/task/create.html'
     success_url = reverse_lazy('task_index')
 
     def handle_no_permission(self):
@@ -63,7 +63,7 @@ class TaskFormCreateView(LoginRequiredMixin, CreateView):
 class TaskFormUpdateView(LoginRequiredMixin, UpdateView):
     model = Task
     form_class = TaskForm
-    template_name = 'task/update.html'
+    template_name = 'pages/task/update.html'
     success_url = reverse_lazy('task_index')
     context_object_name = 'task'
 
@@ -78,7 +78,7 @@ class TaskFormUpdateView(LoginRequiredMixin, UpdateView):
 
 class TaskFormDeleteView(LoginRequiredMixin, DeleteView):
     model = Task
-    template_name = 'task/delete.html'
+    template_name = 'pages/task/delete.html'
     success_url = reverse_lazy('task_index')
     context_object_name = 'task'
 

@@ -7,7 +7,7 @@ from django.views.generic.base import TemplateView
 
 class IndexView(TemplateView):
 
-    template_name = 'index.html'
+    template_name = 'pages/index.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -15,7 +15,7 @@ class IndexView(TemplateView):
 
 
 class UserLoginView(LoginView):
-    template_name = 'login.html'
+    template_name = 'pages/login.html'
     redirect_authenticated_user = True
 
     def get_default_redirect_url(self):
@@ -28,7 +28,7 @@ class UserLoginView(LoginView):
 
 
 class UserLogoutView(LogoutView):
-    template_name = 'logout.html'
+    # template_name = 'pages/logout.html'
     next_page = reverse_lazy('index')
 
     def dispatch(self, request, *args, **kwargs):
