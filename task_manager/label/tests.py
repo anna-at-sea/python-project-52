@@ -1,7 +1,5 @@
 from os.path import join
 
-from django.contrib.messages import get_messages
-from django.test import TestCase
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
@@ -9,40 +7,24 @@ from task_manager.label.models import Label
 from task_manager.status.models import Status
 from task_manager.task.models import Task
 from task_manager.user.models import User
-
-USERS_FIXTURE_PATH = 'task_manager/user/fixtures/'
-TASKS_FIXTURE_PATH = 'task_manager/task/fixtures/'
-STATUSES_FIXTURE_PATH = 'task_manager/status/fixtures/'
+from task_manager.utils import BaseTestCase
 
 
-class TestLabelRead(TestCase):
-    fixtures = [join(USERS_FIXTURE_PATH, "users.json")]
-
+class TestLabelRead(BaseTestCase):
     def setUp(self):
         self.user = User.objects.get(id=1)
 
     def test_read_label_unauthorized(self):
-        response = self.client.get(reverse('label_index'))
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('login'))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            _("You are not logged in! Please log in.")
-        )
+        response = self.client.get(reverse('label_index'), follow=True)
+        self.assertRedirectWithMessage(response)
 
     def test_read_label_authorized(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
+        self.login_user(self.user)
         response = self.client.get(reverse('label_index'))
         self.assertEqual(response.status_code, 200)
 
 
-class TestLabelCreate(TestCase):
-    fixtures = [join(USERS_FIXTURE_PATH, "users.json"), "labels.json"]
+class TestLabelCreate(BaseTestCase):
 
     def setUp(self):
         self.complete_label_data = {
@@ -58,29 +40,19 @@ class TestLabelCreate(TestCase):
         }
 
     def test_create_label_success(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
+        self.login_user(self.user)
         response = self.client.post(
-            reverse('label_create'), self.complete_label_data
+            reverse('label_create'), self.complete_label_data, follow=True
         )
-        self.assertEqual(response.status_code, 302)
         label = Label.objects.get(name='complete_label')
         self.assertIsNotNone(label)
         self.assertTrue(Label.objects.filter(name="complete_label").exists())
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            _("Label is created successfully")
+        self.assertRedirectWithMessage(
+            response, 'label_index', _("Label is created successfully")
         )
 
     def test_create_label_missing_field(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
+        self.login_user(self.user)
         response = self.client.post(
             reverse('label_create'), self.missing_field_label_data
         )
@@ -92,10 +64,7 @@ class TestLabelCreate(TestCase):
         )
 
     def test_create_duplicate_label(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
+        self.login_user(self.user)
         response = self.client.post(
             reverse('label_create'), self.duplicate_label_data
         )
@@ -107,48 +76,31 @@ class TestLabelCreate(TestCase):
 
     def test_create_label_unauthorized(self):
         response = self.client.post(
-            reverse('label_create'), self.complete_label_data
+            reverse('label_create'), self.complete_label_data, follow=True
         )
-        self.assertRedirects(response, reverse('login'))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            _("You are not logged in! Please log in.")
-        )
+        self.assertRedirectWithMessage(response)
 
 
-class TestLabelUpdate(TestCase):
-    fixtures = [join(USERS_FIXTURE_PATH, "users.json"), "labels.json"]
+class TestLabelUpdate(BaseTestCase):
 
     def setUp(self):
         self.label = Label.objects.get(id=1)
         self.user = User.objects.get(id=1)
 
     def test_update_label_success(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
+        self.login_user(self.user)
         response = self.client.post(
             reverse('label_update', kwargs={'pk': 1}),
-            {'name': 'new_label'}
+            {'name': 'new_label'}, follow=True
         )
-        self.assertEqual(response.status_code, 302)
         self.label.refresh_from_db()
         self.assertEqual(self.label.name, 'new_label')
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            _("Label is updated successfully")
+        self.assertRedirectWithMessage(
+            response, 'label_index', _("Label is updated successfully")
         )
 
     def test_update_label_missing_field(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
+        self.login_user(self.user)
         response = self.client.post(
             reverse('label_update', kwargs={'pk': 1}),
             {'name': ''}
@@ -158,23 +110,13 @@ class TestLabelUpdate(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_update_label_unauthorized(self):
-        response = self.client.get(reverse('label_update', kwargs={'pk': 1}))
-        self.assertRedirects(response, reverse('login'))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            _("You are not logged in! Please log in.")
+        response = self.client.get(
+            reverse('label_update', kwargs={'pk': 1}), follow=True
         )
+        self.assertRedirectWithMessage(response)
 
 
-class TestLebelDelete(TestCase):
-    fixtures = [
-        join(USERS_FIXTURE_PATH, "users.json"),
-        join(TASKS_FIXTURE_PATH, "tasks.json"),
-        join(STATUSES_FIXTURE_PATH, "statuses.json"),
-        "labels.json"
-    ]
+class TestLebelDelete(BaseTestCase):
 
     def setUp(self):
         self.user = User.objects.get(id=1)
@@ -185,43 +127,28 @@ class TestLebelDelete(TestCase):
         self.task = Task.objects.get(id=1)
 
     def test_delete_label_success(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
+        self.login_user(self.user)
+        response = self.client.post(
+            reverse('label_delete', kwargs={'pk': 1}), follow=True
         )
-        response = self.client.post(reverse('label_delete', kwargs={'pk': 1}))
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('label_index'))
         self.assertFalse(Label.objects.filter(id=1).exists())
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            _("Label is deleted successfully")
+        self.assertRedirectWithMessage(
+            response, 'label_index', _("Label is deleted successfully")
         )
 
     def test_delete_label_unauthorized(self):
-        response = self.client.post(reverse('label_delete', kwargs={'pk': 1}))
-        self.assertRedirects(response, reverse('login'))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            _("You are not logged in! Please log in.")
+        response = self.client.post(
+            reverse('label_delete', kwargs={'pk': 1}), follow=True
         )
+        self.assertRedirectWithMessage(response)
 
     def test_delete_label_in_use(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
+        self.login_user(self.user)
+        response = self.client.post(
+            reverse('label_delete', kwargs={'pk': 2}), follow=True
         )
-        response = self.client.post(reverse('label_delete', kwargs={'pk': 2}))
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('label_index'))
         self.assertTrue(Label.objects.filter(id=2).exists())
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
+        self.assertRedirectWithMessage(
+            response, 'label_index',
             _("Cannot delete label while it is being used")
         )

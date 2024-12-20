@@ -1,46 +1,29 @@
 from os.path import join
 
-from django.contrib.messages import get_messages
-from django.test import TestCase
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from task_manager.status.models import Status
 from task_manager.user.models import User
-
-USERS_FIXTURE_PATH = 'task_manager/user/fixtures/'
-TASKS_FIXTURE_PATH = 'task_manager/task/fixtures/'
-LABELS_FIXTURE_PATH = 'task_manager/label/fixtures/'
+from task_manager.utils import BaseTestCase
 
 
-class TestStatusRead(TestCase):
-    fixtures = [join(USERS_FIXTURE_PATH, "users.json")]
+class TestStatusRead(BaseTestCase):
 
     def setUp(self):
         self.user = User.objects.get(id=1)
 
     def test_read_status_unauthorized(self):
-        response = self.client.get(reverse('status_index'))
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('login'))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            _("You are not logged in! Please log in.")
-        )
+        response = self.client.get(reverse('status_index'), follow=True)
+        self.assertRedirectWithMessage(response)
 
     def test_read_status_authorized(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
+        self.login_user(self.user)
         response = self.client.get(reverse('status_index'))
         self.assertEqual(response.status_code, 200)
 
 
-class TestStatusCreate(TestCase):
-    fixtures = [join(USERS_FIXTURE_PATH, "users.json"), "statuses.json"]
+class TestStatusCreate(BaseTestCase):
 
     def setUp(self):
         self.complete_status_data = {
@@ -56,29 +39,19 @@ class TestStatusCreate(TestCase):
         }
 
     def test_create_status_success(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
+        self.login_user(self.user)
         response = self.client.post(
-            reverse('status_create'), self.complete_status_data
+            reverse('status_create'), self.complete_status_data, follow=True
         )
-        self.assertEqual(response.status_code, 302)
         status = Status.objects.get(name='complete_status')
         self.assertIsNotNone(status)
         self.assertTrue(Status.objects.filter(name="complete_status").exists())
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            _("Status is created successfully")
+        self.assertRedirectWithMessage(
+            response, 'status_index', _("Status is created successfully")
         )
 
     def test_create_status_missing_field(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
+        self.login_user(self.user)
         response = self.client.post(
             reverse('status_create'), self.missing_field_status_data
         )
@@ -90,10 +63,7 @@ class TestStatusCreate(TestCase):
         )
 
     def test_create_duplicate_status(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
+        self.login_user(self.user)
         response = self.client.post(
             reverse('status_create'), self.duplicate_status_data
         )
@@ -105,48 +75,31 @@ class TestStatusCreate(TestCase):
 
     def test_create_status_unauthorized(self):
         response = self.client.post(
-            reverse('status_create'), self.complete_status_data
+            reverse('status_create'), self.complete_status_data, follow=True
         )
-        self.assertRedirects(response, reverse('login'))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            _("You are not logged in! Please log in.")
-        )
+        self.assertRedirectWithMessage(response)
 
 
-class TestStatusUpdate(TestCase):
-    fixtures = [join(USERS_FIXTURE_PATH, "users.json"), "statuses.json"]
+class TestStatusUpdate(BaseTestCase):
 
     def setUp(self):
         self.status = Status.objects.get(id=1)
         self.user = User.objects.get(id=1)
 
     def test_update_status_success(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
+        self.login_user(self.user)
         response = self.client.post(
             reverse('status_update', kwargs={'pk': 1}),
-            {'name': 'new_status'}
+            {'name': 'new_status'}, follow=True
         )
-        self.assertEqual(response.status_code, 302)
         self.status.refresh_from_db()
         self.assertEqual(self.status.name, 'new_status')
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            _("Status is updated successfully")
+        self.assertRedirectWithMessage(
+            response, 'status_index', _("Status is updated successfully")
         )
 
     def test_update_status_missing_field(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
+        self.login_user(self.user)
         response = self.client.post(
             reverse('status_update', kwargs={'pk': 1}),
             {'name': ''}
@@ -156,65 +109,40 @@ class TestStatusUpdate(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_update_status_unauthorized(self):
-        response = self.client.get(reverse('status_update', kwargs={'pk': 1}))
-        self.assertRedirects(response, reverse('login'))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            _("You are not logged in! Please log in.")
+        response = self.client.get(
+            reverse('status_update', kwargs={'pk': 1}), follow=True
         )
+        self.assertRedirectWithMessage(response)
 
 
-class TestStatusDelete(TestCase):
-    fixtures = [
-        join(USERS_FIXTURE_PATH, "users.json"),
-        join(TASKS_FIXTURE_PATH, "tasks.json"),
-        join(LABELS_FIXTURE_PATH, "labels.json"),
-        "statuses.json"
-    ]
+class TestStatusDelete(BaseTestCase):
 
     def setUp(self):
         self.user = User.objects.get(id=1)
 
     def test_delete_status_success(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
+        self.login_user(self.user)
+        response = self.client.post(
+            reverse('status_delete', kwargs={'pk': 1}), follow=True
         )
-        response = self.client.post(reverse('status_delete', kwargs={'pk': 1}))
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('status_index'))
         self.assertFalse(Status.objects.filter(id=1).exists())
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            _("Status is deleted successfully")
+        self.assertRedirectWithMessage(
+            response, 'status_index', _("Status is deleted successfully")
         )
 
     def test_delete_status_unauthorized(self):
-        response = self.client.post(reverse('status_delete', kwargs={'pk': 1}))
-        self.assertRedirects(response, reverse('login'))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            _("You are not logged in! Please log in.")
+        response = self.client.post(
+            reverse('status_delete', kwargs={'pk': 1}), follow=True
         )
+        self.assertRedirectWithMessage(response)
 
     def test_delete_status_in_use(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
+        self.login_user(self.user)
+        response = self.client.post(
+            reverse('status_delete', kwargs={'pk': 2}), follow=True
         )
-        response = self.client.post(reverse('status_delete', kwargs={'pk': 2}))
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('status_index'))
         self.assertTrue(Status.objects.filter(id=2).exists())
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
+        self.assertRedirectWithMessage(
+            response, 'status_index',
             _("Cannot delete status while it is being used")
         )

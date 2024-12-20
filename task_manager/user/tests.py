@@ -1,18 +1,16 @@
 import json
 from os.path import join
 
-from django.contrib.messages import get_messages
-from django.test import TestCase
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from .models import User
+from task_manager.user.models import User
+from task_manager.utils import BaseTestCase
 
-TEST_FIXTURE_PATH = 'task_manager/user/fixtures/'
+FIXTURE_PATH = 'task_manager/fixtures/'
 
 
-class TestAuthentication(TestCase):
-    fixtures = ["users.json"]
+class TestAuthentication(BaseTestCase):
 
     def setUp(self):
         self.user = User.objects.get(id=1)
@@ -22,49 +20,43 @@ class TestAuthentication(TestCase):
             username=self.user.username,
             password="correct_password"
         )
-        self.assertTrue(login_successful, "User login failed")
+        self.assertTrue(login_successful, _("User login failed"))
         login_unsuccessful = self.client.login(
             username=self.user.username,
             password="wrong_password"
         )
         self.assertFalse(
-            login_unsuccessful, "User login should have failed but it passed"
+            login_unsuccessful, _("User login should have failed but it passed")
         )
 
     def test_logout(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
+        self.login_user(self.user)
         self.client.logout()
         response = self.client.get(reverse('user_update', kwargs={'pk': 1}))
         self.assertRedirects(response, reverse('login'))
 
 
-class TestUserCreate(TestCase):
-    fixtures = ["users.json"]
+class TestUserCreate(BaseTestCase):
 
     def setUp(self):
         self.user = User.objects.get(id=1)
-        with open(join(TEST_FIXTURE_PATH, "test_data.json")) as f:
+        with open(join(FIXTURE_PATH, "users_test_data.json")) as f:
             self.users_data = json.load(f)
-        self.complete_user_data = self.users_data[0]
-        self.missing_field_user_data = self.users_data[1]
-        self.duplicate_user_data = self.users_data[2]
+        self.complete_user_data = self.users_data.get("create_complete")
+        self.missing_field_user_data = self.users_data.get(
+            "create_missing_field"
+        )
+        self.duplicate_user_data = self.users_data.get("create_duplicate")
 
     def test_create_user_success(self):
         response = self.client.post(
-            reverse('user_create'), self.complete_user_data
+            reverse('user_create'), self.complete_user_data, follow=True
         )
-        self.assertEqual(response.status_code, 302)
         user = User.objects.get(username='complete_user')
         self.assertIsNotNone(user)
         self.assertTrue(User.objects.filter(username="complete_user").exists())
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            _("User is registered successfully")
+        self.assertRedirectWithMessage(
+            response, 'login', _("User is registered successfully")
         )
 
     def test_create_user_missing_field(self):
@@ -89,8 +81,7 @@ class TestUserCreate(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class TestUserRead(TestCase):
-    fixtures = ["users.json"]
+class TestUserRead(BaseTestCase):
 
     def setUp(self):
         self.user = User.objects.get(id=1)
@@ -100,10 +91,7 @@ class TestUserRead(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_read_users_authorized(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
+        self.login_user(self.user)
         response = self.client.get(reverse('user_index'))
         self.assertEqual(response.status_code, 200)
 
@@ -112,41 +100,32 @@ class TestUserRead(TestCase):
         self.assertEqual(response.status_code, 404)
 
 
-class TestUserUpdate(TestCase):
-    fixtures = ["users.json"]
+class TestUserUpdate(BaseTestCase):
 
     def setUp(self):
         self.user = User.objects.get(id=2)
-        with open(join(TEST_FIXTURE_PATH, "test_data.json")) as f:
+        with open(join(FIXTURE_PATH, "users_test_data.json")) as f:
             self.users_data = json.load(f)
-        self.complete_user_data = self.users_data[3]
-        self.missing_field_user_data = self.users_data[4]
-        self.duplicate_user_data = self.users_data[5]
+        self.complete_user_data = self.users_data.get("update_complete")
+        self.missing_field_user_data = self.users_data.get(
+            "update_missing_field"
+        )
+        self.duplicate_user_data = self.users_data.get("update_duplicate")
 
     def test_update_user_success(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
+        self.login_user(self.user)
         response = self.client.post(
             reverse('user_update', kwargs={'pk': 2}),
-            self.complete_user_data
+            self.complete_user_data, follow=True
         )
-        self.assertEqual(response.status_code, 302)
         self.user.refresh_from_db()
         self.assertEqual(self.user.username, 'new_username')
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            _("User is updated successfully")
+        self.assertRedirectWithMessage(
+            response, 'user_index', _("User is updated successfully")
         )
 
     def test_update_user_missing_field(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
+        self.login_user(self.user)
         response = self.client.post(
             reverse('user_update', kwargs={'pk': 2}),
             self.missing_field_user_data
@@ -156,10 +135,7 @@ class TestUserUpdate(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_update_duplicate_username(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
+        self.login_user(self.user)
         response = self.client.post(
             reverse('user_update', kwargs={'pk': 2}),
             self.duplicate_user_data
@@ -171,73 +147,62 @@ class TestUserUpdate(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_update_other_user(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
+        self.login_user(self.user)
+        response = self.client.get(
+            reverse('user_update', kwargs={'pk': 1}), follow=True
         )
-        response = self.client.get(reverse('user_update', kwargs={'pk': 1}))
-        self.assertRedirects(response, reverse('user_index'))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
+        self.assertRedirectWithMessage(
+            response, 'user_index',
             _("You don't have permission to edit this user.")
         )
 
     def test_update_user_unauthorized(self):
-        response = self.client.get(reverse('user_update', kwargs={'pk': 1}))
-        self.assertRedirects(response, reverse('login'))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            _("You are not logged in! Please log in.")
+        response = self.client.get(
+            reverse('user_update', kwargs={'pk': 1}), follow=True
         )
+        self.assertRedirectWithMessage(response)
 
 
-class TestUserDelete(TestCase):
-    fixtures = ["users.json"]
+class TestUserDelete(BaseTestCase):
 
     def setUp(self):
-        self.user = User.objects.get(id=1)
+        self.user = User.objects.get(id=3)
+        self.user_in_use = User.objects.get(id=1)
 
     def test_delete_user_success(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
+        self.login_user(self.user)
+        response = self.client.post(
+            reverse('user_delete', kwargs={'pk': 3}), follow=True
         )
-        response = self.client.post(reverse('user_delete', kwargs={'pk': 1}))
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('user_index'))
-        self.assertFalse(User.objects.filter(id=1).exists())
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            _("User is deleted successfully")
+        self.assertFalse(User.objects.filter(id=3).exists())
+        self.assertRedirectWithMessage(
+            response, 'user_index', _("User is deleted successfully")
+        )
+
+    def test_delete_user_in_use(self):
+        self.login_user(self.user_in_use)
+        response = self.client.post(
+            reverse('user_delete', kwargs={'pk': 1}), follow=True
+        )
+        self.assertTrue(User.objects.filter(id=3).exists())
+        self.assertRedirectWithMessage(
+            response, 'user_index',
+            _("Cannot delete user while they are in use")
         )
 
     def test_delete_other_user(self):
-        self.client.login(
-            username=self.user.username,
-            password="correct_password"
-        )
-        response = self.client.post(reverse('user_delete', kwargs={'pk': 2}))
-        self.assertRedirects(response, reverse('user_index'))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            _("You don't have permission to edit this user.")
+        self.login_user(self.user)
+        response = self.client.post(
+            reverse('user_delete', kwargs={'pk': 2}), follow=True
         )
         self.assertTrue(User.objects.filter(id=2).exists())
+        self.assertRedirectWithMessage(
+            response, 'user_index',
+            _("You don't have permission to edit this user.")
+        )
 
     def test_delete_user_unauthorized(self):
-        response = self.client.post(reverse('user_delete', kwargs={'pk': 1}))
-        self.assertRedirects(response, reverse('login'))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(messages)
-        self.assertEqual(
-            str(messages[0]),
-            _("You are not logged in! Please log in.")
+        response = self.client.post(
+            reverse('user_delete', kwargs={'pk': 1}), follow=True
         )
+        self.assertRedirectWithMessage(response)

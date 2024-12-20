@@ -16,5 +16,15 @@
         "first_name": "John",
         "last_name": "Doe"
       }
+    },
+    {
+      "model": "user.user",
+      "pk": 3,
+      "fields": {
+        "username": "user_not_in_use",
+        "password": "pbkdf2_sha256$870000$AqZGEsq1AvlJLYG3cCDBFg$1ZDwUDfyOTzP1TNqvP/8xiPNbOVyl9dTHlGb/Y4JYAU=",
+        "first_name": "Jane",
+        "last_name": "Doe"
+      }
     }
   ]
