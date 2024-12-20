@@ -1,5 +1,3 @@
-from os.path import join
-
 from django.test import RequestFactory
 from django.urls import reverse
 from django.utils.translation import gettext as _
