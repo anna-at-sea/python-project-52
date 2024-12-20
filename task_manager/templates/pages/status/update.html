@@ -3,7 +3,7 @@
 
 {% block content %}
     {% url 'status_update' pk=status.id as action_url %}
-    {% with heading=_("Update status") action_url=action_url form=form|crispy button_text=_("Udate") %}
+    {% with heading=_("Update status") action_url=action_url form=form|crispy button_text=_("Update") %}
         {{ block.super }}
     {% endwith %}
 {% endblock %}
