@@ -25,18 +25,10 @@ class TaskForm(ModelForm):
 
     def clean_name(self):
         name = self.cleaned_data.get('name')
-        if self.instance:
-            if self._meta.model.objects.filter(
-                name=name
-            ).exclude(pk=self.instance.pk).exists():
-                raise ValidationError(
-                    _("Task with this name already exists.")
-                )
-        else:
-            if self._meta.model.objects.filter(
-                name=name
-            ).exists():
-                raise ValidationError(
-                    _("Task with this name already exists.")
-                )
+        if self._meta.model.objects.filter(
+            name=name
+        ).exclude(pk=self.instance.pk).exists():
+            raise ValidationError(
+                _("Task with this name already exists.")
+            )
         return name

@@ -1,6 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import PermissionDenied
+from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
@@ -9,27 +8,20 @@ from django.views.generic import UpdateView
 from django.views.generic.edit import CreateView, DeleteView
 from django_filters.views import FilterView
 
-from .filters import TaskFilter
-from .forms import TaskForm
-from .models import Task
+from task_manager.utils import UserLoginRequiredMixin
+from task_manager.task.filters import TaskFilter
+from task_manager.task.forms import TaskForm
+from task_manager.task.models import Task
 
 
-class TaskIndexView(LoginRequiredMixin, FilterView):
+class TaskIndexView(UserLoginRequiredMixin, FilterView):
     model = Task
     template_name = 'pages/task/index.html'
     context_object_name = 'tasks'
     filterset_class = TaskFilter
 
-    def handle_no_permission(self):
-        messages.error(self.request, _("You are not logged in! Please log in."))
-        return redirect('login')
 
-
-class TaskPageView(LoginRequiredMixin, View):
-
-    def handle_no_permission(self):
-        messages.error(self.request, _("You are not logged in! Please log in."))
-        return redirect('login')
+class TaskPageView(UserLoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         task_id = kwargs.get('pk')
@@ -39,15 +31,14 @@ class TaskPageView(LoginRequiredMixin, View):
         })
 
 
-class TaskFormCreateView(LoginRequiredMixin, CreateView):
+class TaskFormCreateView(
+    UserLoginRequiredMixin, SuccessMessageMixin, CreateView
+):
     model = Task
     form_class = TaskForm
     template_name = 'pages/task/create.html'
     success_url = reverse_lazy('task_index')
-
-    def handle_no_permission(self):
-        messages.error(self.request, _("You are not logged in! Please log in."))
-        return redirect('login')
+    success_message = _("Task is created successfully")
 
     def form_valid(self, form):
         task = form.save(commit=False)
@@ -56,51 +47,36 @@ class TaskFormCreateView(LoginRequiredMixin, CreateView):
         labels = form.cleaned_data.get('labels', [])
         task.labels.set(labels)
         task.save()
-        messages.success(self.request, _("Task is created successfully"))
         return super().form_valid(form)
 
 
-class TaskFormUpdateView(LoginRequiredMixin, UpdateView):
+class TaskFormUpdateView(
+    UserLoginRequiredMixin, SuccessMessageMixin, UpdateView
+):
     model = Task
     form_class = TaskForm
     template_name = 'pages/task/update.html'
     success_url = reverse_lazy('task_index')
     context_object_name = 'task'
-
-    def handle_no_permission(self):
-        messages.error(self.request, _("You are not logged in! Please log in."))
-        return redirect('login')
-
-    def form_valid(self, form):
-        messages.success(self.request, _("Task is updated successfully"))
-        return super().form_valid(form)
+    success_message = _("Task is updated successfully")
 
 
-class TaskFormDeleteView(LoginRequiredMixin, DeleteView):
+class TaskFormDeleteView(
+    UserLoginRequiredMixin, SuccessMessageMixin, DeleteView
+):
     model = Task
     template_name = 'pages/task/delete.html'
     success_url = reverse_lazy('task_index')
     context_object_name = 'task'
-
-    def handle_no_permission(self):
-        messages.error(self.request, _("You are not logged in! Please log in."))
-        return redirect('login')
-
-    def form_valid(self, form):
-        messages.success(self.request, _("Task is deleted successfully"))
-        return super().form_valid(form)
+    success_message = _("Task is deleted successfully")
 
     def dispatch(self, request, *args, **kwargs):
-        try:
-            return super().dispatch(request, *args, **kwargs)
-        except PermissionDenied:
+        if request.user.is_authenticated and (
+            kwargs.get('pk') not in
+            request.user.created_tasks.values_list('id', flat=True)
+        ):
             messages.error(
                 request, _("Task can be deleted only by its creator.")
             )
             return redirect('task_index')
-
-    def get_object(self, queryset=None):
-        task = super().get_object(queryset)
-        if self.request.user.id != task.creator.id:
-            raise PermissionDenied
-        return task
+        return super().dispatch(request, *args, **kwargs)
