@@ -8,9 +8,9 @@ from django.views.generic import UpdateView
 from django.views.generic.edit import CreateView, DeleteView
 from django.views.generic.list import ListView
 
-from task_manager.utils import UserLoginRequiredMixin
 from task_manager.user.forms import UserForm
 from task_manager.user.models import User
+from task_manager.utils import UserLoginRequiredMixin
 
 
 class IndexView(ListView):
