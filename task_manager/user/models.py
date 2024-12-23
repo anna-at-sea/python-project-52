@@ -5,6 +5,10 @@ from django.utils.translation import gettext_lazy as _
 
 
 class User(AbstractUser):
+
+    class Meta:
+        verbose_name = "User"
+
     first_name = models.CharField(
         max_length=150, blank=False, verbose_name=_("First Name")
     )

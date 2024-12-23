@@ -10,7 +10,7 @@ from task_manager.utils import BaseTestCase
 
 class TestLabelRead(BaseTestCase):
     def setUp(self):
-        self.user = User.objects.get(id=1)
+        self.user = User.objects.all().first()
 
     def test_read_label_unauthorized(self):
         response = self.client.get(reverse('label_index'), follow=True)
@@ -25,14 +25,14 @@ class TestLabelRead(BaseTestCase):
 class TestLabelCreate(BaseTestCase):
 
     def setUp(self):
+        self.label = Label.objects.all().first()
+        self.user = User.objects.all().first()
         self.complete_label_data = {
             'name': 'complete_label'
         }
         self.missing_field_label_data = {
             'name': ''
         }
-        self.label = Label.objects.get(id=1)
-        self.user = User.objects.get(id=1)
         self.duplicate_label_data = {
             'name': 'testlabel'
         }
@@ -82,8 +82,8 @@ class TestLabelCreate(BaseTestCase):
 class TestLabelUpdate(BaseTestCase):
 
     def setUp(self):
-        self.label = Label.objects.get(id=1)
-        self.user = User.objects.get(id=1)
+        self.label = Label.objects.all().first()
+        self.user = User.objects.all().first()
 
     def test_update_label_success(self):
         self.login_user(self.user)
@@ -117,12 +117,12 @@ class TestLabelUpdate(BaseTestCase):
 class TestLebelDelete(BaseTestCase):
 
     def setUp(self):
-        self.user = User.objects.get(id=1)
-        self.status = Status.objects.get(id=1)
-        self.label = Label.objects.get(id=1)
+        self.label = Label.objects.all().first()
+        self.user = User.objects.all().first()
+        self.status = Status.objects.all().first()
+        self.task = Task.objects.all().first()
         self.label_in_use = Label.objects.get(id=2)
         self.other_label_in_use = Label.objects.get(id=3)
-        self.task = Task.objects.get(id=1)
 
     def test_delete_label_success(self):
         self.login_user(self.user)

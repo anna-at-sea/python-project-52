@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
 from django.views.generic.base import TemplateView
@@ -14,21 +15,23 @@ class IndexView(TemplateView):
         return context
 
 
-class UserLoginView(LoginView):
-    template_name = 'pages/login.html'
-    redirect_authenticated_user = True
+class UserLoginView(SuccessMessageMixin, LoginView):
+    template_name = 'layouts/form_base.html'
+    success_message = _("You are logged in")
 
-    def get_default_redirect_url(self):
-        messages.add_message(
-            self.request,
-            messages.SUCCESS,
-            _("You are logged in")
-        )
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'heading': _("Log in"),
+            'button_text': _("Sign in")
+        })
+        return context
+
+    def get_success_url(self):
         return reverse_lazy('index')
 
 
 class UserLogoutView(LogoutView):
-    # template_name = 'pages/logout.html'
     next_page = reverse_lazy('index')
 
     def dispatch(self, request, *args, **kwargs):

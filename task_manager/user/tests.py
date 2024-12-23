@@ -13,7 +13,7 @@ FIXTURE_PATH = 'task_manager/fixtures/'
 class TestAuthentication(BaseTestCase):
 
     def setUp(self):
-        self.user = User.objects.get(id=1)
+        self.user = User.objects.all().first()
 
     def test_login(self):
         login_successful = self.client.login(
@@ -39,7 +39,7 @@ class TestAuthentication(BaseTestCase):
 class TestUserCreate(BaseTestCase):
 
     def setUp(self):
-        self.user = User.objects.get(id=1)
+        self.user = User.objects.all().first()
         with open(join(FIXTURE_PATH, "users_test_data.json")) as f:
             self.users_data = json.load(f)
         self.complete_user_data = self.users_data.get("create_complete")
@@ -84,7 +84,7 @@ class TestUserCreate(BaseTestCase):
 class TestUserRead(BaseTestCase):
 
     def setUp(self):
-        self.user = User.objects.get(id=1)
+        self.user = User.objects.all().first()
 
     def test_read_users_unauthorized(self):
         response = self.client.get(reverse('user_index'))

@@ -1,8 +1,0 @@
-{% extends "layouts/form_base.html" %}
-
-{% block content %}
-    {% url 'user_delete' pk=user.id as action_url %}
-    {% with heading=_("Delete user") delete_prompt=_("Are you sure you want to delete ")|add:user.first_name|add:" "|add:user.last_name|add:"?" action_url=action_url button_class='btn btn-danger' button_text=_("Yes, delete") %}
-        {{ block.super }}
-    {% endwith %}
-{% endblock %}

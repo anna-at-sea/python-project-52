@@ -9,7 +9,7 @@ from task_manager.utils import BaseTestCase
 class TestStatusRead(BaseTestCase):
 
     def setUp(self):
-        self.user = User.objects.get(id=1)
+        self.user = User.objects.all().first()
 
     def test_read_status_unauthorized(self):
         response = self.client.get(reverse('status_index'), follow=True)
@@ -24,6 +24,7 @@ class TestStatusRead(BaseTestCase):
 class TestStatusCreate(BaseTestCase):
 
     def setUp(self):
+        self.user = User.objects.all().first()
         self.complete_status_data = {
             'name': 'complete_status'
         }
@@ -31,7 +32,6 @@ class TestStatusCreate(BaseTestCase):
             'name': ''
         }
         self.status = Status.objects.get(id=1)
-        self.user = User.objects.get(id=1)
         self.duplicate_status_data = {
             'name': 'teststatus'
         }
@@ -81,8 +81,8 @@ class TestStatusCreate(BaseTestCase):
 class TestStatusUpdate(BaseTestCase):
 
     def setUp(self):
-        self.status = Status.objects.get(id=1)
-        self.user = User.objects.get(id=1)
+        self.status = Status.objects.all().first()
+        self.user = User.objects.all().first()
 
     def test_update_status_success(self):
         self.login_user(self.user)
@@ -116,7 +116,7 @@ class TestStatusUpdate(BaseTestCase):
 class TestStatusDelete(BaseTestCase):
 
     def setUp(self):
-        self.user = User.objects.get(id=1)
+        self.user = User.objects.all().first()
 
     def test_delete_status_success(self):
         self.login_user(self.user)

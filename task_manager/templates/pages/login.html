@@ -1,11 +1,8 @@
 {% extends "layouts/form_base.html" %}
-{% load crispy_forms_tags %}
 
 {% block content %}
-{% include "partials/flash_message.html" %}
   <div class="container">
-    {% url 'login' as action_url %}
-    {% with heading=_("Log in") action_url=action_url form=form|crispy button_text=_("Sign in") %}
+    {% with heading=_("Log in") button_text=_("Sign in") %}
         {{ block.super }}
     {% endwith %}
   </div>

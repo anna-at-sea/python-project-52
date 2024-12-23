@@ -13,7 +13,7 @@ from task_manager.utils import BaseTestCase
 class TestTaskRead(BaseTestCase):
 
     def setUp(self):
-        self.user = User.objects.get(id=1)
+        self.user = User.objects.all().first()
 
     def test_read_task_index_unauthorized(self):
         response = self.client.get(reverse('task_index'), follow=True)
@@ -36,9 +36,9 @@ class TestTaskRead(BaseTestCase):
 class TestTaskCreate(BaseTestCase):
 
     def setUp(self):
-        self.status = Status.objects.get(id=1)
-        self.user = User.objects.get(id=1)
-        self.task = Task.objects.get(id=1)
+        self.status = Status.objects.all().first()
+        self.user = User.objects.all().first()
+        self.task = Task.objects.all().first()
         self.label1 = Label.objects.get(id=1)
         self.label2 = Label.objects.get(id=2)
         self.complete_task_data = {
@@ -126,8 +126,8 @@ class TestTaskCreate(BaseTestCase):
 class TestTaskUpdate(BaseTestCase):
 
     def setUp(self):
-        self.task = Task.objects.get(id=1)
-        self.user = User.objects.get(id=1)
+        self.task = Task.objects.all().first()
+        self.user = User.objects.all().first()
         self.updated_task_data = {
             'name': 'new_task',
             'description': 'new_description',
@@ -168,9 +168,9 @@ class TestTaskUpdate(BaseTestCase):
 class TestTaskDelete(BaseTestCase):
 
     def setUp(self):
-        self.user = User.objects.get(id=1)
+        self.user = User.objects.all().first()
         self.other_user = User.objects.get(id=2)
-        self.task = Task.objects.get(id=1)
+        self.task = Task.objects.all().first()
 
     def test_delete_task_success(self):
         self.login_user(self.user)
