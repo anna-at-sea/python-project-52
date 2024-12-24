@@ -6,22 +6,20 @@ from django.views import View
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django_filters.views import FilterView
 
+from task_manager import utils
 from task_manager.task.filters import TaskFilter
 from task_manager.task.forms import TaskForm
 from task_manager.task.models import Task
-from task_manager.utils import (
-    CreateViewMixin, DeleteViewMixin, UpdateViewMixin, UserLoginRequiredMixin
-)
 
 
-class TaskIndexView(UserLoginRequiredMixin, FilterView):
+class TaskIndexView(utils.UserLoginRequiredMixin, FilterView):
     model = Task
     template_name = 'pages/index_task.html'
     context_object_name = 'tasks'
     filterset_class = TaskFilter
 
 
-class TaskPageView(UserLoginRequiredMixin, View):
+class TaskPageView(utils.UserLoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         task_id = kwargs.get('pk')
@@ -32,7 +30,8 @@ class TaskPageView(UserLoginRequiredMixin, View):
 
 
 class TaskFormCreateView(
-    CreateViewMixin, UserLoginRequiredMixin, SuccessMessageMixin, CreateView
+    utils.CreateViewMixin, utils.UserLoginRequiredMixin,
+    SuccessMessageMixin, CreateView
 ):
     model = Task
     form_class = TaskForm
@@ -48,14 +47,16 @@ class TaskFormCreateView(
 
 
 class TaskFormUpdateView(
-    UpdateViewMixin, UserLoginRequiredMixin, SuccessMessageMixin, UpdateView
+    utils.UpdateViewMixin, utils.UserLoginRequiredMixin,
+    SuccessMessageMixin, UpdateView
 ):
     model = Task
     form_class = TaskForm
 
 
 class TaskFormDeleteView(
-    DeleteViewMixin, UserLoginRequiredMixin, SuccessMessageMixin, DeleteView
+    utils.DeleteViewMixin, utils.UserLoginRequiredMixin,
+    SuccessMessageMixin, DeleteView
 ):
     model = Task
 

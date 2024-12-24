@@ -2,14 +2,12 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
+from task_manager import utils
 from task_manager.status.forms import StatusForm
 from task_manager.status.models import Status
-from task_manager.utils import (
-    CreateViewMixin, DeleteViewMixin, UpdateViewMixin, UserLoginRequiredMixin
-)
 
 
-class StatusIndexView(UserLoginRequiredMixin, ListView):
+class StatusIndexView(utils.UserLoginRequiredMixin, ListView):
     model = Status
     template_name = 'pages/index_status.html'
 
@@ -20,20 +18,23 @@ class StatusIndexView(UserLoginRequiredMixin, ListView):
 
 
 class StatusFormCreateView(
-    CreateViewMixin, UserLoginRequiredMixin, SuccessMessageMixin, CreateView
+    utils.CreateViewMixin, utils.UserLoginRequiredMixin,
+    SuccessMessageMixin, CreateView
 ):
     model = Status
     form_class = StatusForm
 
 
 class StatusFormUpdateView(
-    UpdateViewMixin, UserLoginRequiredMixin, SuccessMessageMixin, UpdateView
+    utils.UpdateViewMixin, utils.UserLoginRequiredMixin,
+    SuccessMessageMixin, UpdateView
 ):
     model = Status
     form_class = StatusForm
 
 
 class StatusFormDeleteView(
-    DeleteViewMixin, UserLoginRequiredMixin, SuccessMessageMixin, DeleteView
+    utils.DeleteViewMixin, utils.UserLoginRequiredMixin,
+    SuccessMessageMixin, DeleteView
 ):
     model = Status
