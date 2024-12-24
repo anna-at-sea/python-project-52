@@ -4,8 +4,9 @@ from django.views.generic.list import ListView
 
 from task_manager.status.forms import StatusForm
 from task_manager.status.models import Status
-from task_manager.utils import CreateViewMixin, DeleteViewMixin, \
-    UpdateViewMixin, UserLoginRequiredMixin
+from task_manager.utils import (
+    CreateViewMixin, DeleteViewMixin, UpdateViewMixin, UserLoginRequiredMixin
+)
 
 
 class StatusIndexView(UserLoginRequiredMixin, ListView):
