@@ -4,9 +4,8 @@ from django.views.generic.list import ListView
 
 from task_manager.label.forms import LabelForm
 from task_manager.label.models import Label
-from task_manager.utils import (
-    CreateViewMixin, DeleteViewMixin, UpdateViewMixin, UserLoginRequiredMixin,
-)
+from task_manager.utils import CreateViewMixin, DeleteViewMixin
+from task_manager.utils import UpdateViewMixin, UserLoginRequiredMixin
 
 
 class LabelIndexView(UserLoginRequiredMixin, ListView):
