@@ -4,12 +4,9 @@ from django.utils.translation import gettext as _
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
+from task_manager import utils
 from task_manager.user.forms import UserForm
 from task_manager.user.models import User
-from task_manager.utils import (
-    CreateViewMixin, DeleteViewMixin, UpdateViewMixin,
-    UserLoginRequiredMixin, UserPermissionMixin
-)
 
 
 class IndexView(ListView):
@@ -22,7 +19,9 @@ class IndexView(ListView):
         return context
 
 
-class UserFormCreateView(CreateViewMixin, SuccessMessageMixin, CreateView):
+class UserFormCreateView(
+    utils.CreateViewMixin, SuccessMessageMixin, CreateView
+):
     model = User
     form_class = UserForm
 
@@ -42,15 +41,15 @@ class UserFormCreateView(CreateViewMixin, SuccessMessageMixin, CreateView):
 
 
 class UserFormUpdateView(
-    UpdateViewMixin, UserLoginRequiredMixin, UserPermissionMixin,
-    SuccessMessageMixin, UpdateView
+    utils.UpdateViewMixin, utils.UserLoginRequiredMixin,
+    utils.UserPermissionMixin, SuccessMessageMixin, UpdateView
 ):
     model = User
     form_class = UserForm
 
 
 class UserFormDeleteView(
-    DeleteViewMixin, UserLoginRequiredMixin, UserPermissionMixin,
-    SuccessMessageMixin, DeleteView
+    utils.DeleteViewMixin, utils.UserLoginRequiredMixin,
+    utils.UserPermissionMixin, SuccessMessageMixin, DeleteView
 ):
     model = User
