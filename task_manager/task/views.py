@@ -9,9 +9,8 @@ from django_filters.views import FilterView
 from task_manager.task.filters import TaskFilter
 from task_manager.task.forms import TaskForm
 from task_manager.task.models import Task
-from task_manager.utils import (
-    CreateViewMixin, DeleteViewMixin, UpdateViewMixin, UserLoginRequiredMixin
-)
+from task_manager.utils import CreateViewMixin, DeleteViewMixin, \
+    UpdateViewMixin, UserLoginRequiredMixin
 
 
 class TaskIndexView(UserLoginRequiredMixin, FilterView):

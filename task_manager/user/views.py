@@ -6,10 +6,8 @@ from django.views.generic.list import ListView
 
 from task_manager.user.forms import UserForm
 from task_manager.user.models import User
-from task_manager.utils import (
-    CreateViewMixin, DeleteViewMixin, UpdateViewMixin,
-    UserLoginRequiredMixin, UserPermissionMixin
-)
+from task_manager.utils import CreateViewMixin, DeleteViewMixin, \
+    UpdateViewMixin, UserLoginRequiredMixin, UserPermissionMixin
 
 
 class IndexView(ListView):
