@@ -3,8 +3,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext as _
 from django.views import View
-from django.views.generic import UpdateView
-from django.views.generic.edit import CreateView, DeleteView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django_filters.views import FilterView
 
 from task_manager.task.filters import TaskFilter
