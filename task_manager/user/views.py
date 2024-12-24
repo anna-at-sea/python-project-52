@@ -33,6 +33,14 @@ class UserFormCreateView(CreateViewMixin, SuccessMessageMixin, CreateView):
     def get_success_url(self):
         return reverse_lazy('login')
 
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'heading': _("Registration"),
+            'button_text': _("Register")
+        })
+        return context
+
 
 class UserFormUpdateView(
     UpdateViewMixin, UserLoginRequiredMixin, UserPermissionMixin,

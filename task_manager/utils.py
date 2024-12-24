@@ -8,6 +8,55 @@ from django.test import TestCase
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext as _
 
+TRANSLATION_MAP = {
+    ('create', 'label'): {
+        'success_message': _("Label is created successfully"),
+        'heading': _("Create label"),
+    },
+    ('create', 'status'): {
+        'success_message': _("Status is created successfully"),
+        'heading': _("Create status"),
+    },
+    ('create', 'task'): {
+        'success_message': _("Task is created successfully"),
+        'heading': _("Create task"),
+    },
+    ('update', 'label'): {
+        'success_message': _("Label is updated successfully"),
+        'heading': _("Update label"),
+    },
+    ('update', 'status'): {
+        'success_message': _("Status is updated successfully"),
+        'heading': _("Update status"),
+    },
+    ('update', 'task'): {
+        'success_message': _("Task is updated successfully"),
+        'heading': _("Update task"),
+    },
+    ('delete', 'label'): {
+        'success_message': _("Label is deleted successfully"),
+        'heading': _("Delete label"),
+    },
+    ('delete', 'status'): {
+        'success_message': _("Status is deleted successfully"),
+        'heading': _("Delete status"),
+    },
+    ('delete', 'task'): {
+        'success_message': _("Task is deleted successfully"),
+        'heading': _("Delete task"),
+    },
+    ('update', 'user'): {
+        'success_message': _("User is updated successfully"),
+        'heading': _("Update user"),
+    },
+    ('delete', 'user'): {
+        'success_message': _("User is deleted successfully"),
+        'heading': _("Delete user"),
+    },
+    'create': _("Create"),
+    'update': _("Update")
+}
+
 
 class BaseTestCase(TestCase):
     fixtures = ["users.json", "tasks.json", "statuses.json", "labels.json"]
@@ -47,17 +96,20 @@ class BaseViewMixin:
         return reverse_lazy(f'{name}_index')
 
     def get_success_message(self, *args, **kwargs):
-        name = self.get_model_name().title()
+        name = self.get_model_name().lower()
         action = self.get_action().lower()
-        return _(f"{name} is {action}d successfully")
+        translation = (
+            TRANSLATION_MAP.get((action, name), {}).get('success_message')
+        )
+        return translation
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
-        action = self.get_action().title()
+        action = self.get_action().lower()
         name = self.get_model_name().lower()
         context.update({
-            'heading': _(f"{action} {name}"),
-            'button_text': _(f"{action}")
+            'heading': TRANSLATION_MAP.get((action, name), {}).get('heading'),
+            'button_text': TRANSLATION_MAP.get(action)
         })
         return context
 
@@ -87,7 +139,9 @@ class DeleteViewMixin(BaseViewMixin):
         object = self.get_object()
         context.update({
             'form': '',
-            'delete_prompt': _(f"Are you sure you want to delete {object}?"),
+            'delete_prompt': (
+                _("Are you sure you want to delete ") + f"{object}?"
+            ),
             'button_class': 'btn btn-danger',
             'button_text': _("Yes, delete")
         })
