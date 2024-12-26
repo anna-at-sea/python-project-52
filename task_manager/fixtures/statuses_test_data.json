@@ -1,0 +1,14 @@
+{
+    "create_complete": {
+        "name": "complete_status"
+    },
+    "missing_field": {
+        "name": ""
+    },
+    "create_duplicate": {
+        "name": "teststatus"
+    },
+    "update_complete": {
+        "name": "new_status"
+    }
+}

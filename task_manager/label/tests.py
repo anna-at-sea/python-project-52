@@ -1,3 +1,6 @@
+import json
+from os.path import join
+
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
@@ -6,6 +9,8 @@ from task_manager.status.models import Status
 from task_manager.task.models import Task
 from task_manager.user.models import User
 from task_manager.utils import BaseTestCase
+
+FIXTURE_PATH = 'task_manager/fixtures/'
 
 
 class TestLabelRead(BaseTestCase):
@@ -27,15 +32,11 @@ class TestLabelCreate(BaseTestCase):
     def setUp(self):
         self.label = Label.objects.all().first()
         self.user = User.objects.all().first()
-        self.complete_label_data = {
-            'name': 'complete_label'
-        }
-        self.missing_field_label_data = {
-            'name': ''
-        }
-        self.duplicate_label_data = {
-            'name': 'testlabel'
-        }
+        with open(join(FIXTURE_PATH, "labels_test_data.json")) as f:
+            self.labels_data = json.load(f)
+        self.complete_label_data = self.labels_data.get("create_complete")
+        self.missing_field_label_data = self.labels_data.get("missing_field")
+        self.duplicate_label_data = self.labels_data.get("create_duplicate")
 
     def test_create_label_success(self):
         self.login_user(self.user)
@@ -84,12 +85,16 @@ class TestLabelUpdate(BaseTestCase):
     def setUp(self):
         self.label = Label.objects.all().first()
         self.user = User.objects.all().first()
+        with open(join(FIXTURE_PATH, "labels_test_data.json")) as f:
+            self.labels_data = json.load(f)
+        self.complete_label_data = self.labels_data.get("update_complete")
+        self.missing_field_label_data = self.labels_data.get("missing_field")
 
     def test_update_label_success(self):
         self.login_user(self.user)
         response = self.client.post(
             reverse('label_update', kwargs={'pk': 1}),
-            {'name': 'new_label'}, follow=True
+            self.complete_label_data, follow=True
         )
         self.label.refresh_from_db()
         self.assertEqual(self.label.name, 'new_label')
@@ -101,7 +106,7 @@ class TestLabelUpdate(BaseTestCase):
         self.login_user(self.user)
         response = self.client.post(
             reverse('label_update', kwargs={'pk': 1}),
-            {'name': ''}
+            self.missing_field_label_data
         )
         form = response.context['form']
         self.assertFormError(form, 'name', _('This field is required.'))

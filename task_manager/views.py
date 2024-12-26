@@ -7,7 +7,6 @@ from django.views.generic.base import TemplateView
 
 
 class IndexView(TemplateView):
-
     template_name = 'pages/index.html'
 
     def get_context_data(self, **kwargs):
@@ -17,7 +16,6 @@ class IndexView(TemplateView):
 
 class UserLoginView(SuccessMessageMixin, LoginView):
     template_name = 'layouts/form_base.html'
-    success_message = _("You are logged in")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -29,6 +27,9 @@ class UserLoginView(SuccessMessageMixin, LoginView):
 
     def get_success_url(self):
         return reverse_lazy('index')
+
+    def get_success_message(self, *args, **kwargs):
+        return _("You are logged in")
 
 
 class UserLogoutView(LogoutView):

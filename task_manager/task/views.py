@@ -61,10 +61,8 @@ class TaskFormDeleteView(
     model = Task
 
     def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated and (
-            kwargs.get('pk') not in
-            request.user.created_tasks.values_list('id', flat=True)
-        ):
+        self.obj = self.get_object()
+        if request.user.is_authenticated and self.obj.creator != request.user:
             messages.error(
                 request, _("Task can be deleted only by its creator.")
             )

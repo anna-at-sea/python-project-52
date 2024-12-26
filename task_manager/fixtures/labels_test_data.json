@@ -1,0 +1,14 @@
+{
+    "create_complete": {
+        "name": "complete_label"
+    },
+    "missing_field": {
+        "name": ""
+    },
+    "create_duplicate": {
+        "name": "testlabel"
+    },
+    "update_complete": {
+        "name": "new_label"
+    }
+}

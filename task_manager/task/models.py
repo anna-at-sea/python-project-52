@@ -9,7 +9,10 @@ from task_manager.user.models import User
 
 class Task(models.Model):
     name = models.CharField(
-        max_length=150, blank=False, verbose_name=_("Name")
+        max_length=150, blank=False, unique=True, verbose_name=_("Name"),
+        error_messages={
+            'unique': _("Task with this name already exists.")
+        }
     )
     description = models.TextField(
         blank=True, null=True, verbose_name=_("Description")
